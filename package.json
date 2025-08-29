@@ -1,0 +1,54 @@
+{
+  "name": "promptonomicon",
+  "version": "1.0.0",
+  "description": "Transform how you build software with AI through structured, documentation-driven development",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "promptonomicon": "./bin/promptonomicon.js"
+  },
+  "scripts": {
+    "test": "echo \"Tests will be added\" && exit 0",
+    "prepare": "echo \"Package prepared successfully\"",
+    "lint": "echo \"Linting will be added\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:trianglegrrl/promptonomicon.git"
+  },
+  "keywords": [
+    "ai",
+    "development",
+    "documentation",
+    "templates",
+    "framework",
+    "cursor",
+    "claude",
+    "windsurf",
+    "coding-assistant"
+  ],
+  "author": "trianglegrrl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trianglegrrl/promptonomicon/issues"
+  },
+  "homepage": "https://github.com/trianglegrrl/promptonomicon#readme",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "chalk": "^5.6.0",
+    "commander": "^14.0.0",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "index.js",
+    "README.md",
+    "LICENSE",
+    ".promptonomicon/"
+  ]
+}

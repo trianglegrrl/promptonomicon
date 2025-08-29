@@ -54,22 +54,68 @@ your-repo/
 
 ## Quick Start
 
-### Using Promptonomicon in Your Project
+### Installation
 
-#### Quick Install
+#### NPM (Recommended)
 
 ```bash
-# Clone this repo and run the install script from your project root
-git clone https://github.com/[your-username]/promptonomicon.git /tmp/promptonomicon
-bash /tmp/promptonomicon/install-promptonomicon.sh
+# Install globally
+npm install -g promptonomicon
 
-# Or for non-interactive installation (CI/CD friendly)
-bash /tmp/promptonomicon/install-promptonomicon.sh -y
+# Or add to your project
+npm install --save-dev promptonomicon
+
+# If installed locally, use npx
+npx promptonomicon init
 ```
 
-This creates all directories and copies the framework files.
+#### Yarn
 
-#### Manual Setup
+```bash
+# Install globally
+yarn global add promptonomicon
+
+# Or add to your project
+yarn add --dev promptonomicon
+
+# If installed locally
+yarn promptonomicon init
+```
+
+### Using Promptonomicon in Your Project
+
+#### Quick Setup
+
+```bash
+# Initialize in your project directory
+promptonomicon init
+
+# Check your setup
+promptonomicon doctor
+
+# Reset templates to latest version (destructive)
+promptonomicon reset --yes
+```
+
+#### Commands
+
+- **`promptonomicon init`** - Initialize Promptonomicon in the current directory
+  - Creates all required directories
+  - Fetches latest templates from GitHub
+  - Sets up `.scratch` directory for temporary work
+  - Use `--force` to overwrite existing setup
+
+- **`promptonomicon doctor`** - Check if your setup is healthy
+  - Verifies all directories exist
+  - Checks all template files are present
+  - Compares with latest templates on GitHub
+
+- **`promptonomicon reset`** - Reset templates to latest version
+  - **⚠️ Warning**: This overwrites all customizations
+  - Fetches fresh templates from GitHub
+  - Use `--yes` to skip confirmation
+
+#### Manual Setup (Alternative)
 
 1. **Copy the framework** to your repository:
    - `.promptonomicon/` directory (including all templates and PROMPTONOMICON.md)
@@ -81,19 +127,61 @@ This creates all directories and copies the framework files.
 
 3. **Use with any AI assistant**:
    ```
-   "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md to implement [feature]"
+   >  "Follow the Promptonomicon process in
+      .promptonomicon/PROMPTONOMICON.md to
+      implement [feature]"
+
    ```
 
 See [INTEGRATION.md](INTEGRATION.md) for detailed setup instructions.
 
 ### This Repository
 
-This repository serves as both the framework source and a living example:
+This repository serves as both the npm package source and a living example:
 
-- **Framework files**: `.promptonomicon/` directory (copy this entire directory)
-- **Install script**: `install-promptonomicon.sh` for quick setup
+- **Framework files**: `.promptonomicon/` directory containing all templates
+- **NPM package**: Published to [npmjs.com/package/promptonomicon](https://www.npmjs.com/package/promptonomicon)
 - **Example output**: `ai-docs-sample/` shows what gets generated
 - **Integration guide**: [INTEGRATION.md](INTEGRATION.md) for customization details
+
+### Development
+
+To contribute or modify Promptonomicon:
+
+```bash
+# Clone the repository
+git clone https://github.com/trianglegrrl/promptonomicon.git
+cd promptonomicon
+
+# Install dependencies
+npm install
+
+# Test locally
+npm link
+promptonomicon doctor
+
+# Run tests
+npm test
+```
+
+### Publishing
+
+The package is automatically published to npm when you create a new release on GitHub:
+
+1. **Set up npm authentication**:
+   - Generate an npm access token at [npmjs.com/settings](https://www.npmjs.com/settings)
+   - Add it as `NPMJS_ACCESS_TOKEN` in your GitHub repository secrets
+   - Go to Settings → Secrets and variables → Actions → New repository secret
+
+2. **Create a release**:
+   ```bash
+   # Tag your release
+   git tag -a v1.0.1 -m "Release version 1.0.1"
+   git push origin v1.0.1
+
+   # Then create a release on GitHub
+   # The CI/CD pipeline will automatically publish to npm
+   ```
 
 ## Key Principles
 

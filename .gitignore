@@ -42,3 +42,7 @@ coverage/
 *.tmp
 *.temp
 *.bak
+
+# NPM package files
+package-lock.json
+promptonomicon-*.tgz
