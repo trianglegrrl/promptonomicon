@@ -181,6 +181,10 @@ describe('promptonomicon doctor command', () => {
     test('should warn about missing MCP mentions in templates', () => {
       execSync(`node ${CLI_PATH} init --force -y --with-mcp-servers=versionator,context7`, { encoding: 'utf8' });
 
+      // Remove MCP mentions from templates to test the warning
+      const devProcess = fs.readFileSync('.promptonomicon/4_DEVELOPMENT_PROCESS.md', 'utf8');
+      fs.writeFileSync('.promptonomicon/4_DEVELOPMENT_PROCESS.md', devProcess.replace(/versionator|context7/gi, ''));
+
       const output = execSync(`node ${CLI_PATH} doctor`, { encoding: 'utf8' });
 
       // Check for MCP integration issues

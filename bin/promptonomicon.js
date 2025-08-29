@@ -247,11 +247,8 @@ async function setupMCPServers(servers) {
     configurations.push('Windsurf (.windsurf/mcp.json)');
   }
 
-  // Claude Desktop configuration (informational only)
-  const claudeConfigPath = path.join(os.homedir(), '.config/claude/claude_desktop_config.json');
-  if (existsSync(path.dirname(claudeConfigPath))) {
-    configurations.push(`Claude Desktop (see .promptonomicon/ai-assistants/claude-reference.md for manual setup)`);
-  }
+  // Claude Desktop configuration (informational only - always show since it requires manual setup)
+  configurations.push(`Claude Desktop (see .promptonomicon/ai-assistants/claude-reference.md for manual setup)`);
 
   // Generic project MCP configuration
   const genericMcpPath = '.mcp.json';
