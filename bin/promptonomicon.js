@@ -87,7 +87,8 @@ async function fetchMCPConfig() {
 
   try {
     const response = await axios.get(url);
-    return response.data;
+    // axios returns parsed JSON, need to stringify it
+    return typeof response.data === 'string' ? response.data : JSON.stringify(response.data, null, 2);
   } catch (error) {
     // Try local file
     const localPath = path.join(__dirname, '..', '.promptonomicon', '.mcp.json');
