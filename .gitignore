@@ -44,5 +44,5 @@ coverage/
 *.bak
 
 # NPM package files
-package-lock.json
+# package-lock.json - needed for CI
 promptonomicon-*.tgz
