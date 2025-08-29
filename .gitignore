@@ -46,3 +46,6 @@ coverage/
 # NPM package files
 # package-lock.json - needed for CI
 promptonomicon-*.tgz
+
+# Release helper script
+release-v1.1.0.sh

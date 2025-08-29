@@ -9,7 +9,7 @@
 # Promptonomicon
 
 [![CI/CD Pipeline](https://github.com/trianglegrrl/promptonomicon/actions/workflows/ci.yml/badge.svg)](https://github.com/trianglegrrl/promptonomicon/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/promptonomicon.svg)](https://badge.fury.io/js/promptonomicon)
+[![npm version](https://badge.fury.io/js/promptonomicon.svg)](https://www.npmjs.com/package/promptonomicon)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Transform how you build software with AI through structured, documentation-driven development.
