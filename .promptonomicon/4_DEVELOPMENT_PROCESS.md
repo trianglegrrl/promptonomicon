@@ -14,6 +14,12 @@ starting points - replace them with your actual practices.
 - [ ] Test framework ready
 - [ ] `.scratch/todo.md` shows phases 1-3 complete
 
+## Available Tools
+<!-- MCP servers if configured:
+- versionator: Use for checking latest package versions before adding dependencies
+- context7: Use for fetching current library documentation (requires CONTEXT7_API_KEY)
+-->
+
 ## Development Workflow
 ### 1. Set Up Environment
 <!-- Define your feature/bugfix workflow here, e.g. -->
@@ -30,6 +36,14 @@ yarn test
 # Or maybe it's python
 source venv/bin/activate
 ```
+
+#### Adding New Dependencies
+<!-- When adding dependencies, use versionator MCP server if available -->
+Before adding a new dependency:
+1. Check latest version: `get_package_version("npm", "package-name")`
+2. Verify compatibility with existing dependencies
+3. Update package.json with exact version from versionator
+4. Document why the dependency is needed
 
 ### 2. Test-Driven Development Cycle
 <!-- Define your tdd or other development workflow here, e.g. -->

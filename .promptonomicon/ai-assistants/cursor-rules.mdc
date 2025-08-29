@@ -1,0 +1,44 @@
+---
+alwaysApply: true
+---
+
+# Promptonomicon Framework
+
+This project uses the Promptonomicon framework for structured, documentation-driven development.
+
+## Primary Rule
+
+**For ALL new features, bug fixes, or significant changes:**
+Follow the Promptonomicon process defined in `.promptonomicon/PROMPTONOMICON.md`
+
+## Process Overview
+
+1. **Understand** - Investigate requirements thoroughly
+2. **Design** - Create design documentation in `ai-docs/ai-design/`
+3. **Plan** - Build implementation plan in `ai-docs/ai-plans/`
+4. **Develop** - Execute with test-driven development
+5. **Document** - Capture reality in `ai-docs/ai-implementation/`
+6. **Update** - Synchronize all documentation
+
+## Key Principles
+
+- Documentation-driven development
+- Fail-hard policy (no silent failures)
+- Test coverage requirements at each step
+- Clean code practices (SOLID, DRY, KISS)
+
+## MCP Servers Available
+
+- **versionator**: Use for checking latest package versions
+- **context7**: Use for fetching current library documentation (if API key configured)
+
+## File Naming
+
+Use datestamps: `date +%Y%m%d`
+- Design: `ai-docs/ai-design/YYYYMMDD_design_feature_name.md`
+- Plan: `ai-docs/ai-plans/YYYYMMDD_plan_feature_name.md`
+- Implementation: `ai-docs/ai-implementation/YYYYMMDD_implementation_feature_name.md`
+
+## Scratch Directory
+
+Use `.scratch/` for temporary work and track progress in `.scratch/todo.md`

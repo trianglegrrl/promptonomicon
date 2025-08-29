@@ -1,6 +1,6 @@
 {
   "name": "promptonomicon",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Transform how you build software with AI through structured, documentation-driven development",
   "main": "index.js",
   "type": "module",
@@ -8,7 +8,11 @@
     "promptonomicon": "./bin/promptonomicon.js"
   },
   "scripts": {
-    "test": "echo \"Tests will be added\" && exit 0",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:verbose": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
+    "test:ci": "NODE_OPTIONS=--experimental-vm-modules jest --ci --coverage --maxWorkers=2",
     "prepare": "echo \"Package prepared successfully\"",
     "lint": "echo \"Linting will be added\""
   },
@@ -37,9 +41,13 @@
     "axios": "^1.11.0",
     "chalk": "^5.6.0",
     "commander": "^14.0.0",
+    "inquirer": "^12.9.4",
     "ora": "^8.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^30.1.1",
+    "mock-fs": "^5.5.0"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
@@ -49,6 +57,7 @@
     "index.js",
     "README.md",
     "LICENSE",
+    "INTEGRATION.md",
     ".promptonomicon/"
   ]
 }

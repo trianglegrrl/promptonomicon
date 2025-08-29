@@ -41,7 +41,10 @@ Copy to `.scratch/todo.md`:
 - `path/to/file.js`: [what changes]
 
 ### Dependencies
-Check versions with: `get_package_version("npm", "package")`
+<!-- Use MCP servers if available:
+- versionator: Check latest versions with get_package_version("npm", "package-name")
+- context7: Fetch current docs with get-library-docs (requires API key)
+-->
 - [package@version]: [why needed]
 
 ## Implementation Steps

@@ -21,6 +21,7 @@ INTEGRATION.md
 # Environment and secrets
 .env
 .env.*
+.env.example
 
 # OS files
 .DS_Store
@@ -47,3 +48,6 @@ build/
 
 # Scratch directory (users will create their own)
 .scratch/
+
+# Auto-generated files
+CLAUDE.md

@@ -8,6 +8,10 @@
 
 # Promptonomicon
 
+[![CI/CD Pipeline](https://github.com/trianglegrrl/promptonomicon/actions/workflows/ci.yml/badge.svg)](https://github.com/trianglegrrl/promptonomicon/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/promptonomicon.svg)](https://badge.fury.io/js/promptonomicon)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Transform how you build software with AI through structured, documentation-driven development.
 
 ## What is Promptonomicon?
@@ -17,6 +21,8 @@ Promptonomicon is a framework that gives AI coding assistants a consistent, high
 - **Six-phase process** that ensures thorough, well-documented development
 - **Customizable templates** that encode your team's standards and practices
 - **Single entrypoint** (`PROMPTONOMICON.md`) that any AI can follow
+- **MCP server integration** for real-time package versions and documentation
+- **AI assistant auto-configuration** for Cursor, VS Code, and more
 
 The result: AI assistants that follow your standards, document their work, and deliver production-ready code.
 
@@ -41,15 +47,26 @@ your-repo/
 │   ├── 4_DEVELOPMENT_PROCESS.md # Your coding standards
 │   ├── 5_BUILD_IMPLEMENTATION.md # Reality documentation
 │   ├── 6_DOCUMENTATION_UPDATE.md # Update checklist
-│   └── PROMPTONOMICON.md       # AI entrypoint - "start here"
+│   ├── PROMPTONOMICON.md       # AI entrypoint - "start here"
+│   └── ai-assistants/          # AI tool configurations (copied during init)
+│       ├── cursor-rules.mdc    # Cursor integration (.mdc format)
+│       ├── vscode-promptonomicon.md # VS Code integration
+│       ├── windsurf-rules.md   # Windsurf integration
+│       ├── CLAUDE.md           # Claude instructions (copied to project root)
+│       └── claude-reference.md # Claude Desktop MCP setup guide
 ├── ai-docs/                     # Generated documentation (commit these!)
 │   ├── ai-design/              # Design documents
 │   ├── ai-plans/               # Implementation plans
 │   ├── ai-implementation/      # What was built
 │   └── features/               # User-facing docs
-└── .scratch/                    # Temporary work (gitignored)
-    ├── README.md                # Usage guide (auto-created)
-    └── todo.md                  # Current feature progress
+├── .scratch/                    # Temporary work (gitignored)
+│   ├── README.md               # Usage guide (auto-created)
+│   └── todo.md                 # Current feature progress
+├── .cursor/                     # Cursor configuration (if detected)
+│   ├── rules/promptonomicon.mdc # Auto-created rules (.mdc format)
+│   └── mcp.json                # MCP server config
+├── CLAUDE.md                    # Claude instructions (auto-created)
+└── .mcp.json                    # Generic MCP config (if configured)
 ```
 
 ## Quick Start
@@ -103,17 +120,60 @@ promptonomicon reset --yes
   - Creates all required directories
   - Fetches latest templates from GitHub
   - Sets up `.scratch` directory for temporary work
+  - Use `--with-mcp-servers` to configure MCP servers
   - Use `--force` to overwrite existing setup
 
 - **`promptonomicon doctor`** - Check if your setup is healthy
   - Verifies all directories exist
   - Checks all template files are present
-  - Compares with latest templates on GitHub
+  - Warns if templates haven't been customized
+  - Validates MCP server configuration
+  - Checks for MCP mentions in templates
 
 - **`promptonomicon reset`** - Reset templates to latest version
   - **⚠️ Warning**: This overwrites all customizations
   - Fetches fresh templates from GitHub
+  - Use `--with-mcp-servers` to reconfigure MCP
   - Use `--yes` to skip confirmation
+
+### MCP Server Integration
+
+Promptonomicon can configure two Model Context Protocol (MCP) servers:
+
+#### versionator
+- Checks latest versions of packages across all ecosystems
+- Works automatically without configuration
+- Example: `get_package_version("npm", "react")` returns latest React version
+
+#### context7
+- Fetches up-to-date documentation for libraries
+- Requires `CONTEXT7_API_KEY` environment variable
+- Get your API key at [context7.com](https://context7.com)
+- Example: `get-library-docs("/react/react")` returns current React docs
+
+To configure MCP servers:
+```bash
+# Interactive selection
+promptonomicon init --with-mcp-servers
+
+# Specific servers
+promptonomicon init --with-mcp-servers=versionator,context7
+
+# Non-interactive with defaults
+promptonomicon init -y --with-mcp-servers
+```
+
+### AI Assistant Integration
+
+Promptonomicon automatically configures your AI coding assistants:
+
+- **Cursor**: Creates `.cursor/rules/promptonomicon.mdc` and `.cursor/mcp.json`
+- **VS Code**: Creates `.vscode/promptonomicon.md`
+- **Windsurf**: Creates `.windsurf/rules.md`
+- **Claude**: Creates `CLAUDE.md` in project root (works with Claude Desktop/API)
+- **MCP Setup**: See `.promptonomicon/ai-assistants/claude-reference.md` for Claude Desktop MCP configuration
+
+The configuration files instruct AI assistants to follow the Promptonomicon process automatically.
 
 #### Manual Setup (Alternative)
 
@@ -139,10 +199,12 @@ See [INTEGRATION.md](INTEGRATION.md) for detailed setup instructions.
 
 This repository serves as both the npm package source and a living example:
 
-- **Framework files**: `.promptonomicon/` directory containing all templates
 - **NPM package**: Published to [npmjs.com/package/promptonomicon](https://www.npmjs.com/package/promptonomicon)
+- **Framework templates**: `.promptonomicon/` directory containing all templates
+- **AI assistant configs**: `.promptonomicon/ai-assistants/` for tool integration
+- **MCP server config**: `.promptonomicon/.mcp.json` template
 - **Example output**: `ai-docs-sample/` shows what gets generated
-- **Integration guide**: [INTEGRATION.md](INTEGRATION.md) for customization details
+- **Integration guide**: [INTEGRATION.md](INTEGRATION.md) for detailed setup
 
 ### Development
 
@@ -162,6 +224,28 @@ promptonomicon doctor
 
 # Run tests
 npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Testing
+
+Promptonomicon includes comprehensive test coverage:
+
+- **Unit tests** for all CLI commands
+- **Integration tests** for real-world usage scenarios
+- **Coverage reporting** for quality assurance
+- **CI/CD pipeline** that runs tests on multiple Node.js versions
+
+Run the test suite:
+```bash
+npm test              # Run all tests
+npm run test:coverage # Generate coverage report
+npm run test:watch    # Watch mode for development
 ```
 
 ### Publishing

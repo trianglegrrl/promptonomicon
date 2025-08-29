@@ -2,7 +2,7 @@
 // This file is the main module entry point when the package is imported
 // The CLI functionality is in bin/promptonomicon.js
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 
 export const info = {
   name: 'promptonomicon',

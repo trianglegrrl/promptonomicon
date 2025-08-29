@@ -4,23 +4,31 @@ This guide explains how to add Promptonomicon to your existing project and custo
 
 ## Quick Start
 
-### Option 1: Automated Install
+### Installation via npm (Recommended)
 
 ```bash
-# Clone and run the install script
-git clone https://github.com/[your-username]/promptonomicon.git /tmp/promptonomicon
-bash /tmp/promptonomicon/install-promptonomicon.sh
+# Install globally
+npm install -g promptonomicon
 
-# Or for non-interactive installation
-bash /tmp/promptonomicon/install-promptonomicon.sh -y
+# Or install as a dev dependency
+npm install --save-dev promptonomicon
 ```
 
-### Option 2: Manual Install
+### Initialize in Your Project
 
-1. Copy the `.promptonomicon/` directory to your repository root
-2. Ensure `PROMPTONOMICON.md` is inside `.promptonomicon/`
-3. Create `ai-docs/` subdirectories and `.scratch/` directory
-4. Customize the templates in `.promptonomicon/` with your opinions
+```bash
+# If installed globally
+promptonomicon init
+
+# If installed locally
+npx promptonomicon init
+
+# With MCP servers (interactive)
+promptonomicon init --with-mcp-servers
+
+# With specific MCP servers (non-interactive)
+promptonomicon init --with-mcp-servers=context7,versionator
+```
 
 ## What Gets Installed
 
@@ -75,9 +83,33 @@ Each template in `.promptonomicon/` contains sections marked for customization:
 
 ## Working with AI Tools
 
-### For Any AI Assistant (Claude, Cursor, Windsurf, etc.)
+### Automatic Integration
 
-Simply reference the entrypoint:
+Promptonomicon can automatically integrate with your AI coding assistant:
+
+#### Cursor
+- Creates `.cursor/rules/promptonomicon.mdc` with instructions to use Promptonomicon (uses modern .mdc format)
+- Adds MCP server configuration to `.cursor/mcp.json` if requested
+- Merges with existing MCP configurations
+
+#### Claude
+- Creates `CLAUDE.md` in project root with Promptonomicon instructions
+- Claude automatically reads this file when working in your project
+- For MCP servers in Claude Desktop, see manual configuration guide
+
+#### VS Code
+- Creates `.vscode/promptonomicon.md` for AI extensions
+- Creates `.vscode/mcp.json` if requested (merged with existing config)
+- MCP server support depends on your AI extension
+
+#### Windsurf
+- Creates `.windsurf/rules.md` with Promptonomicon instructions
+- Creates `.windsurf/mcp.json` if requested (merged with existing config)
+- MCP server support depends on Windsurf's implementation
+
+### Manual Integration
+
+For any AI assistant, simply reference the entrypoint:
 
 ```
 "Follow the Promptonomicon process defined in .promptonomicon/PROMPTONOMICON.md to implement this feature: [describe feature]"
@@ -88,6 +120,21 @@ The AI will:
 2. Follow the six-phase process
 3. Use your customized templates
 4. Track progress in `.scratch/todo.md`
+5. Use MCP servers if configured (context7 for docs, versionator for versions)
+
+### MCP Server Integration
+
+Promptonomicon includes two Model Context Protocol (MCP) servers:
+
+#### versionator-mcp
+- Checks latest versions of packages across all ecosystems
+- Works automatically without configuration
+- Used in dependency management tasks
+
+#### context7
+- Fetches up-to-date documentation for libraries
+- Requires `CONTEXT7_API_KEY` environment variable
+- Enhances AI's knowledge of current library APIs
 
 ### Tool-Agnostic Design
 
@@ -96,6 +143,7 @@ Promptonomicon works with any AI coding assistant because:
 - No special syntax or tool-specific features
 - Clear, sequential process
 - Self-contained documentation
+- Optional MCP server enhancements
 
 ## Best Practices
 
@@ -164,6 +212,46 @@ pytest
 - Docstrings for all public functions
 ```
 
+## Available Commands
+
+### promptonomicon init
+Initialize Promptonomicon in your project:
+- Creates all required directories
+- Fetches latest templates from GitHub
+- Optionally configures MCP servers
+- Sets up AI assistant integration files
+
+### promptonomicon doctor
+Check your Promptonomicon setup:
+- Verifies all files and directories exist
+- Compares templates with latest versions
+- Warns if templates haven't been customized
+- Validates MCP server configuration
+
+### promptonomicon reset
+Reset templates to latest version:
+- **⚠️ Warning**: Overwrites all customizations
+- Use `--yes` to skip confirmation
+- Use `--with-mcp-servers` to reconfigure MCP
+
+## MCP Server Configuration
+
+### Environment Variables
+
+For context7 (documentation fetching):
+```bash
+# Add to your .env or shell profile
+export CONTEXT7_API_KEY="your-api-key-here"
+```
+
+### Configuration Locations
+
+MCP servers are configured in:
+- **Cursor**: `.cursor/mcp.json`
+- **Claude Desktop**: `~/.config/claude/claude_desktop_config.json`
+- **VS Code**: Extension-specific settings
+- **Generic**: `.mcp.json` in project root
+
 ## Troubleshooting
 
 **Q: The AI isn't following my customizations**
@@ -175,9 +263,17 @@ A: Yes, but update .promptonomicon/PROMPTONOMICON.md to point to your renamed fi
 **Q: How detailed should customizations be?**
 A: Include enough to enforce your standards, but keep it scannable
 
+**Q: MCP servers aren't working**
+A: Run `promptonomicon doctor` to check configuration. Ensure required API keys are set.
+
+**Q: How do I know if I should customize templates?**
+A: Run `promptonomicon doctor` - it will warn if you're using unmodified templates
+
 ## Next Steps
 
-1. Copy the files to your repository
-2. Customize each template with your opinions
-3. Test with your preferred AI tool
-4. Iterate based on results
+1. Install with `npm install -g promptonomicon`
+2. Run `promptonomicon init` in your repository
+3. Customize each template with your standards
+4. Configure MCP servers if desired
+5. Test with your preferred AI tool
+6. Iterate based on results

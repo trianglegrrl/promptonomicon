@@ -30,28 +30,49 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
-      - name: Test CLI commands
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Test CLI commands (integration test)
         run: |
+          # Create a temporary test directory
+          TEST_DIR=$(mktemp -d)
+          cd $TEST_DIR
+
           # Make the CLI executable
-          chmod +x ./bin/promptonomicon.js
+          chmod +x $GITHUB_WORKSPACE/bin/promptonomicon.js
 
           # Test help command
-          node ./bin/promptonomicon.js --help
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js --help
 
           # Test doctor command (should fail since we're not initialized)
-          node ./bin/promptonomicon.js doctor || true
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js doctor || true
 
           # Test init command
-          node ./bin/promptonomicon.js init
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js init -y
 
           # Test doctor command again (should pass)
-          node ./bin/promptonomicon.js doctor
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js doctor
 
           # Test reset command
-          node ./bin/promptonomicon.js reset --yes
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js reset --yes
+
+          # Test with MCP servers
+          node $GITHUB_WORKSPACE/bin/promptonomicon.js init -y --force --with-mcp-servers=versionator
+
+          # Verify MCP configuration
+          test -f .mcp.json && echo "✓ MCP configuration created"
+          test -f CLAUDE.md && echo "✓ Claude instructions created"
+
+          # Clean up
+          cd $GITHUB_WORKSPACE
+          rm -rf $TEST_DIR
 
   publish:
     needs: test
