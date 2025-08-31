@@ -158,10 +158,14 @@ describe('promptonomicon doctor command', () => {
     test('should warn about context7 without API key', () => {
       execSync(`node ${CLI_PATH} init --force -y --with-mcp-servers=context7`, { encoding: 'utf8' });
 
-      // Make sure CONTEXT7_API_KEY is not set
-      delete process.env.CONTEXT7_API_KEY;
+      // Explicitly pass environment without CONTEXT7_API_KEY
+      const cleanEnv = { ...process.env };
+      delete cleanEnv.CONTEXT7_API_KEY;
 
-      const output = execSync(`node ${CLI_PATH} doctor`, { encoding: 'utf8' });
+      const output = execSync(`node ${CLI_PATH} doctor`, { 
+        encoding: 'utf8',
+        env: cleanEnv
+      });
 
       expect(output).toContain('Warning: context7 is configured but CONTEXT7_API_KEY environment variable is not set');
     });
