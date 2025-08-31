@@ -162,7 +162,7 @@ describe('promptonomicon doctor command', () => {
       const cleanEnv = { ...process.env };
       delete cleanEnv.CONTEXT7_API_KEY;
 
-      const output = execSync(`node ${CLI_PATH} doctor`, { 
+      const output = execSync(`node ${CLI_PATH} doctor`, {
         encoding: 'utf8',
         env: cleanEnv
       });
