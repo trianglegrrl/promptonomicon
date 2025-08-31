@@ -89,11 +89,11 @@ Please fix these issues, making the minimum necessary changes. The output should
 If you have existing documentation you want to convert to Promptonomicon format, use this prompt:
 
 ````markdown
-I want to migrate my existing repository documentation to the Promptonomicon documentation hierarchy. 
+I want to migrate my existing repository documentation to the Promptonomicon documentation hierarchy.
 
 My current documentation is located in:
 - docs/features/ (user-facing feature documentation)
-- docs/architecture/ (technical design documents) 
+- docs/architecture/ (technical design documents)
 - docs/decisions/ (architectural decision records)
 - CHANGELOG.md (release history)
 - [ADD YOUR SPECIFIC LOCATIONS HERE]
