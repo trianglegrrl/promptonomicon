@@ -74,12 +74,47 @@ Create or replace `.scratch/todo.md` to track your progress:
 [Working notes, discoveries, questions, etc.]
 ```
 
+## Using Existing Documentation
+
+**CRITICAL**: Before starting any new feature, you MUST review and leverage existing documentation.
+
+### Phase 1: Review Existing Documentation
+1. **Read `ai-docs/` thoroughly**:
+   - `ai-docs/ai-design/` - Previous design decisions and patterns
+   - `ai-docs/ai-plans/` - Implementation approaches that worked
+   - `ai-docs/ai-implementation/` - What was actually built and lessons learned
+   - `ai-docs/features/` - User-facing feature documentation
+
+2. **Understand established patterns**:
+   - How similar features were designed and implemented
+   - Coding standards and architectural decisions
+   - Testing approaches and coverage expectations
+   - Documentation styles and conventions
+
+3. **Use MCP servers for external documentation**:
+   - **versionator**: Always check latest package versions before adding dependencies
+   - **context7**: Get current documentation for external libraries and frameworks
+   - Reference official docs for frameworks, libraries, and tools in use
+
+4. **Leverage semantic search tools**:
+   - Use semantic search to find relevant patterns in `ai-docs/`
+   - Search for similar features, error handling approaches, or architectural decisions
+   - Example: Search "authentication flow" to find how auth was previously implemented
+   - Example: Search "database migration" to understand the established migration patterns
+
+### Throughout Development
+- **Maintain consistency** with existing patterns and decisions
+- **Reference previous implementations** when solving similar problems
+- **Build upon existing architecture** rather than introducing new patterns
+- **Update related documentation** when your changes affect existing features
+
 ## Critical Rules
 
 1. **Never skip phases** - Complete all six phases in order
 2. **Create all documents** - Design, Plan, and Implementation docs are required
 3. **Follow the templates** - Use the guides in `.promptonomicon/`
 4. **Track your progress** - Update `.scratch/todo.md` as you work
+5. **Review existing documentation** - Always start by understanding what's already been built
 
 ## Start Here
 

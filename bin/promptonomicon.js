@@ -772,7 +772,7 @@ program
 // Main program setup
 program
   .name('promptonomicon')
-  .version('1.2.0')
+  .version('1.3.0')
   .description('Transform how you build software with AI through structured, documentation-driven development');
 
 program.parse();
