@@ -31,6 +31,28 @@
     "windsurf",
     "coding-assistant"
   ],
+  "examples": [
+    {
+      "description": "Initialize Promptonomicon in your project",
+      "code": "npx promptonomicon init"
+    },
+    {
+      "description": "Initialize with MCP servers for enhanced AI capabilities",
+      "code": "promptonomicon init --with-mcp-servers=versionator,context7"
+    },
+    {
+      "description": "Check your setup and get recommendations",
+      "code": "promptonomicon doctor"
+    },
+    {
+      "description": "Reset templates to latest version (destructive)",
+      "code": "promptonomicon reset --yes"
+    },
+    {
+      "description": "Use with AI assistant (after initialization)",
+      "code": "# Tell your AI: \"Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md to implement [feature]\""
+    }
+  ],
   "author": "trianglegrrl",
   "license": "MIT",
   "bugs": {

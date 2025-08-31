@@ -193,7 +193,7 @@ The configuration files instruct AI assistants to follow the Promptonomicon proc
 
    ```
 
-See [INTEGRATION.md](INTEGRATION.md) for detailed setup instructions.
+See [INTEGRATION.md](INTEGRATION.md) for detailed setup instructions, or [EXAMPLE_REPO_CONVERSION.md](EXAMPLE_REPO_CONVERSION.md) for step-by-step examples of converting an existing repository.
 
 ### This Repository
 
