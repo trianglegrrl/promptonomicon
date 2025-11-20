@@ -7,13 +7,18 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import os from 'os';
 import { execSync } from 'child_process';
 import inquirer from 'inquirer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Read version from package.json
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+const VERSION = packageJson.version;
 
 const program = new Command();
 
@@ -29,6 +34,8 @@ const TEMPLATE_FILES = [
   '4_DEVELOPMENT_PROCESS.md',
   '5_BUILD_IMPLEMENTATION.md',
   '6_DOCUMENTATION_UPDATE.md',
+  'DOCUMENTATION_INDEX.md',
+  'INTEGRATION.md',
   'PROMPTONOMICON.md',
   'README.md'
 ];
@@ -96,13 +103,26 @@ const MCP_SERVER_TEMPLATES = {
 };
 
 async function fetchTemplateFile(filename) {
+  // Try local file first (from installed package)
+  const localPath = path.join(__dirname, '..', '.promptonomicon', filename);
+  
+  if (existsSync(localPath)) {
+    try {
+      return await fs.readFile(localPath, 'utf-8');
+    } catch (localError) {
+      // If local read fails, continue to try GitHub
+    }
+  }
+
+  // Fallback to GitHub if local doesn't exist or fails
   const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/.promptonomicon/${filename}`;
 
   try {
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    throw new Error(`Failed to fetch ${filename}: ${error.message}`);
+    // If both local and GitHub fail, throw error with helpful message
+    throw new Error(`Failed to fetch ${filename}: Local file not found and GitHub fetch failed (${error.message}). Make sure promptonomicon is properly installed.`);
   }
 }
 
@@ -508,35 +528,58 @@ program
       let mcpConfigurations = [];
       let mcpInfoMessages = [];
       
-      if (!options.yes) {
-        // Always prompt for MCP server configuration unless -y flag is set
-        spinner.stop();
-        
-        let serverConfigs = {};
-        if (typeof options.withMcpServers === 'string') {
-          // Specific servers provided as comma-separated list
-          const serverNames = options.withMcpServers.split(',').map(s => s.trim());
-          // Prompt for configuration values, filtered to requested servers
-          const result = await promptForMCPServers(false, serverNames);
-          serverConfigs = result.serverConfigs;
-          mcpInfoMessages = result.infoMessages;
-        } else {
-          // Interactive mode - prompt for server selection and configuration
-          const result = await promptForMCPServers(false, null);
-          serverConfigs = result.serverConfigs;
-          mcpInfoMessages = result.infoMessages;
-        }
-        
-        if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
-          spinner.start('Configuring MCP servers...');
+      if (options.withMcpServers !== undefined || !options.yes) {
+        // If --with-mcp-servers is provided OR we're not in -y mode, handle MCP servers
+        if (!options.yes) {
+          // Interactive mode - prompt for MCP server configuration
+          spinner.stop();
+          
+          let serverConfigs = {};
+          if (typeof options.withMcpServers === 'string') {
+            // Specific servers provided as comma-separated list
+            const serverNames = options.withMcpServers.split(',').map(s => s.trim());
+            // Prompt for configuration values, filtered to requested servers
+            const result = await promptForMCPServers(false, serverNames);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          } else {
+            // Interactive mode - prompt for server selection and configuration
+            const result = await promptForMCPServers(false, null);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          }
+          
+          if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
+            spinner.start('Configuring MCP servers...');
+            mcpConfigurations = await setupMCPServers(serverConfigs);
+          }
+        } else if (options.withMcpServers !== undefined && typeof options.withMcpServers === 'string') {
+          // -y flag with specific servers - configure them (but skip prompts for env vars)
+          spinner.text = 'Configuring MCP servers...';
+          const serverNames = options.withMcpServers.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          
+          // Build configs from templates, but skip servers that require env vars we don't have
+          const serverConfigs = {};
+          for (const serverName of serverNames) {
+            const serverTemplate = MCP_SERVER_TEMPLATES[serverName];
+            if (serverTemplate) {
+              // For -y mode, only add servers that don't require env vars OR have them set
+              const requiresVars = serverTemplate.requiresVars || [];
+              const hasRequiredVars = requiresVars.length === 0 || requiresVars.every(varName => process.env[varName]);
+              if (hasRequiredVars) {
+                // Create config without prompts (use placeholders if needed)
+                const config = { ...serverTemplate };
+                delete config.description;
+                delete config.requiresVars;
+                delete config.infoOnly;
+                serverConfigs[serverName] = config;
+              }
+            }
+          }
+          
+          // Always call setupMCPServers to create/update .mcp.json (even if empty)
           mcpConfigurations = await setupMCPServers(serverConfigs);
         }
-      } else if (options.withMcpServers && typeof options.withMcpServers === 'string') {
-        // -y flag with specific servers - use defaults (empty config, just note them)
-        spinner.text = 'Configuring MCP servers...';
-        const serverNames = options.withMcpServers.split(',').map(s => s.trim());
-        // Note: with -y flag, we don't configure servers that need environment variables
-        // Versionator can be configured without env vars, so it could be added here if needed
       }
 
 
@@ -564,8 +607,11 @@ program
       }
 
       console.log('\n' + chalk.cyan('Next steps:'));
-      console.log('  1. Customize the templates in .promptonomicon/ for your project');
-      console.log('  2. Tell your AI assistant: "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md"');
+      console.log('  1. Customize Promptonomicon for your project:');
+      console.log('     Tell your AI assistant: "Follow the process in .promptonomicon/INTEGRATION.md to customize PROMPTONOMICON for this project"');
+      console.log('     This will automatically investigate your repository, research best practices, and customize all templates');
+      console.log('  2. Build features using Promptonomicon:');
+      console.log('     Tell your AI assistant: "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md to implement [feature]"');
       console.log('  3. Run "promptonomicon doctor" to check your setup');
 
     } catch (error) {
@@ -608,34 +654,58 @@ program
       let mcpConfigurations = [];
       let mcpInfoMessages = [];
       
-      if (!options.yes) {
-        // Always prompt for MCP server configuration unless -y flag is set
-        spinner.stop();
-        
-        let serverConfigs = {};
-        if (typeof options.withMcpServers === 'string') {
-          // Specific servers provided as comma-separated list
-          const serverNames = options.withMcpServers.split(',').map(s => s.trim());
-          // Prompt for configuration values, filtered to requested servers
-          const result = await promptForMCPServers(false, serverNames);
-          serverConfigs = result.serverConfigs;
-          mcpInfoMessages = result.infoMessages;
-        } else if (options.withMcpServers === true) {
-          // Interactive mode - prompt for server selection and configuration
-          const result = await promptForMCPServers(false, null);
-          serverConfigs = result.serverConfigs;
-          mcpInfoMessages = result.infoMessages;
-        }
-        
-        if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
-          spinner.start('Configuring MCP servers...');
+      if (options.withMcpServers !== undefined || !options.yes) {
+        // If --with-mcp-servers is provided OR we're not in -y mode, handle MCP servers
+        if (!options.yes) {
+          // Interactive mode - prompt for MCP server configuration
+          spinner.stop();
+          
+          let serverConfigs = {};
+          if (typeof options.withMcpServers === 'string') {
+            // Specific servers provided as comma-separated list
+            const serverNames = options.withMcpServers.split(',').map(s => s.trim());
+            // Prompt for configuration values, filtered to requested servers
+            const result = await promptForMCPServers(false, serverNames);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          } else if (options.withMcpServers === true) {
+            // Interactive mode - prompt for server selection and configuration
+            const result = await promptForMCPServers(false, null);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          }
+          
+          if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
+            spinner.start('Configuring MCP servers...');
+            mcpConfigurations = await setupMCPServers(serverConfigs);
+          }
+        } else if (options.withMcpServers !== undefined && typeof options.withMcpServers === 'string') {
+          // -y flag with specific servers - configure them (but skip prompts for env vars)
+          spinner.text = 'Configuring MCP servers...';
+          const serverNames = options.withMcpServers.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          
+          // Build configs from templates, but skip servers that require env vars we don't have
+          const serverConfigs = {};
+          for (const serverName of serverNames) {
+            const serverTemplate = MCP_SERVER_TEMPLATES[serverName];
+            if (serverTemplate) {
+              // For -y mode, only add servers that don't require env vars OR have them set
+              const requiresVars = serverTemplate.requiresVars || [];
+              const hasRequiredVars = requiresVars.length === 0 || requiresVars.every(varName => process.env[varName]);
+              if (hasRequiredVars) {
+                // Create config without prompts (use placeholders if needed)
+                const config = { ...serverTemplate };
+                delete config.description;
+                delete config.requiresVars;
+                delete config.infoOnly;
+                serverConfigs[serverName] = config;
+              }
+            }
+          }
+          
+          // Always call setupMCPServers to create/update .mcp.json (even if empty)
           mcpConfigurations = await setupMCPServers(serverConfigs);
         }
-      } else if (options.withMcpServers && typeof options.withMcpServers === 'string') {
-        // -y flag with specific servers - use defaults (empty config, just note them)
-        spinner.text = 'Configuring MCP servers...';
-        const serverNames = options.withMcpServers.split(',').map(s => s.trim());
-        // Versionator can be configured without env vars, so it could be added here if needed
       }
 
       spinner.succeed('Templates reset to latest version!');
@@ -837,7 +907,15 @@ program
 // Main program setup
 program
   .name('promptonomicon')
-  .version('2.0.0')
-  .description('Transform how you build software with AI through structured, documentation-driven development');
+  .version(VERSION, '-v, --version', 'display version number')
+  .description('Transform how you build software with AI through structured, documentation-driven development')
+  .addHelpText('before', `Promptonomicon ${VERSION}\n`);
+
+// Handle -V as an alias for --version (check before parsing)
+if (process.argv.includes('-V')) {
+  const versionIndex = process.argv.indexOf('-V');
+  // Replace -V with --version
+  process.argv[versionIndex] = '--version';
+}
 
 program.parse();

@@ -47,10 +47,18 @@ Creates design documents for Phases 1 (Understand) and 2 (Design) of the develop
 
 ## Context Investigation
 
+**First**: Consult the Documentation Index (`.promptonomicon/DOCUMENTATION_INDEX.md`) to identify relevant documentation to review.
+
 ### Repository Analysis
 - Architecture patterns: [what exists]
 - Similar features: [examples]
 - Integration points: [where this fits]
+
+**Reference Documentation**:
+- Review architecture docs (if applicable): See `.promptonomicon/DOCUMENTATION_INDEX.md`
+- Review similar feature docs: See `ai-docs/features/` and previous design docs in `ai-docs/ai-design/`
+- Review API docs (if using APIs): See `.promptonomicon/DOCUMENTATION_INDEX.md`
+- Review implementation docs: See `ai-docs/ai-implementation/` for lessons learned
 
 ### Technical Stack
 - [Languages, frameworks, tools in use]

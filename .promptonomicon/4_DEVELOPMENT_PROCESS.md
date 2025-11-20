@@ -13,6 +13,14 @@ starting points - replace them with your actual practices.
 - [ ] Dependencies installed
 - [ ] Test framework ready
 - [ ] `.scratch/todo.md` shows phases 1-3 complete
+- [ ] Documentation Index reviewed (`.promptonomicon/DOCUMENTATION_INDEX.md`) - identified relevant docs to reference
+
+**Reference Documentation**:
+- Before starting development, review `.promptonomicon/DOCUMENTATION_INDEX.md` to identify:
+  - Testing documentation (for test patterns and conventions)
+  - API documentation (if using existing APIs)
+  - Configuration documentation (for setup requirements)
+  - Similar implementation docs (for patterns and lessons learned)
 
 ## Available Tools
 <!-- MCP servers if configured:

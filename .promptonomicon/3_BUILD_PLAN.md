@@ -40,8 +40,16 @@ Copy to `.scratch/todo.md`:
 
 ## Repository Context
 
+**First**: Consult the Documentation Index (`.promptonomicon/DOCUMENTATION_INDEX.md`) to identify relevant documentation and similar implementations to reference.
+
 ### Patterns to Follow
 - [Pattern]: See `path/to/example.js`
+
+**Reference Documentation**:
+- Review similar implementation plans: See `ai-docs/ai-plans/`
+- Review similar implementations: See `ai-docs/ai-implementation/`
+- Review testing docs: See `.promptonomicon/DOCUMENTATION_INDEX.md`
+- Review API docs (if applicable): See `.promptonomicon/DOCUMENTATION_INDEX.md`
 
 ### Files to Modify
 - `path/to/file.js`: [what changes]

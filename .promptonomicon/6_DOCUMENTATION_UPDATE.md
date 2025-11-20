@@ -11,7 +11,11 @@ Synchronizes all documentation for Phase 6 (Update) of the development process.
 
 ## Process
 
+**First**: Consult the Documentation Index (`.promptonomicon/DOCUMENTATION_INDEX.md`) to identify all documentation that needs to be updated based on what was built.
+
 ### 1. Create Update Checklist
+
+**Reference the Documentation Index**: Use `.promptonomicon/DOCUMENTATION_INDEX.md` to systematically identify all documentation that needs updates. For each document, check the "When to Update" section to determine if your changes require updates.
 
 Based on what was built, identify what needs updating:
 
@@ -112,20 +116,31 @@ Brief description
 
 ## Cross-Reference Updates
 
-When adding features, update:
-- Main feature list
-- Configuration sections
-- API references
-- Example code
-- Troubleshooting guides
+**Use Documentation Index**: Reference `.promptonomicon/DOCUMENTATION_INDEX.md` to ensure you don't miss any documentation that needs updates.
+
+When adding features, systematically check each documentation type:
+- Main feature list (README.md)
+- Configuration sections (see Documentation Index for config docs)
+- API references (see Documentation Index for API docs)
+- Example code (check all docs that include examples)
+- Troubleshooting guides (see Documentation Index)
+- Architecture docs (if feature changes architecture)
+- Testing docs (if feature adds new testing patterns)
+
+**Documentation Index Reference**:
+- Review `.promptonomicon/DOCUMENTATION_INDEX.md` for complete list
+- Check "When to Update" for each documentation type
+- Verify all relevant documentation is synchronized
 
 ## Checklist
-- [ ] Created update checklist
-- [ ] Found all references
-- [ ] Updated all locations
+- [ ] Consulted Documentation Index (`.promptonomicon/DOCUMENTATION_INDEX.md`)
+- [ ] Created update checklist based on Documentation Index
+- [ ] Found all references using Documentation Index
+- [ ] Updated all locations identified in Documentation Index
 - [ ] Validated changes
 - [ ] No broken links
 - [ ] Examples tested
+- [ ] Documentation Index itself updated (if new docs added)
 
 ## Completion
 - [ ] All docs synchronized

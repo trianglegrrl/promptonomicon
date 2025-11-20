@@ -102,10 +102,10 @@ describe('promptonomicon doctor command', () => {
     });
 
     test('should check for AI assistant files', () => {
-      // Create tool directories
-      fs.mkdirSync('.cursor');
-      fs.mkdirSync('.vscode');
-      fs.mkdirSync('.windsurf');
+      // Create tool directories (use recursive to avoid EEXIST)
+      if (!fs.existsSync('.cursor')) fs.mkdirSync('.cursor', { recursive: true });
+      if (!fs.existsSync('.vscode')) fs.mkdirSync('.vscode', { recursive: true });
+      if (!fs.existsSync('.windsurf')) fs.mkdirSync('.windsurf', { recursive: true });
 
       const output = execSync(`node ${CLI_PATH} doctor`, { encoding: 'utf8' });
 
@@ -117,11 +117,13 @@ describe('promptonomicon doctor command', () => {
     });
 
     test('should detect missing AI assistant configurations', () => {
-      fs.mkdirSync('.cursor');
-      fs.mkdirSync('.vscode');
+      if (!fs.existsSync('.cursor')) fs.mkdirSync('.cursor', { recursive: true });
+      if (!fs.existsSync('.vscode')) fs.mkdirSync('.vscode', { recursive: true });
 
-      // Delete the AI config files
-      fs.rmSync('CLAUDE.md');
+      // Delete all AI config files to test "no files found" message
+      if (fs.existsSync('CLAUDE.md')) fs.rmSync('CLAUDE.md');
+      if (fs.existsSync('.cursor/rules/promptonomicon.mdc')) fs.rmSync('.cursor/rules/promptonomicon.mdc', { recursive: true });
+      if (fs.existsSync('.vscode/promptonomicon.md')) fs.rmSync('.vscode/promptonomicon.md');
 
       const output = execSync(`node ${CLI_PATH} doctor`, { encoding: 'utf8' });
 
@@ -212,8 +214,8 @@ describe('promptonomicon doctor command', () => {
     });
 
     test('should check tool-specific MCP configurations', () => {
-      fs.mkdirSync('.cursor');
-      fs.mkdirSync('.vscode');
+      if (!fs.existsSync('.cursor')) fs.mkdirSync('.cursor', { recursive: true });
+      if (!fs.existsSync('.vscode')) fs.mkdirSync('.vscode', { recursive: true });
 
       execSync(`node ${CLI_PATH} init --force -y --with-mcp-servers=versionator`, { encoding: 'utf8' });
 
