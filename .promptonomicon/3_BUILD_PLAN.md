@@ -27,10 +27,16 @@ Creates actionable plans for Phase 3 (Plan) of the development process.
 Copy to `.scratch/todo.md`:
 - [x] 1. Understand
 - [x] 2. Design
+- [x] 2.5. Resolve Open Questions
 - [x] 3. Plan (current)
 - [ ] 4. Develop
 - [ ] 5. Document
 - [ ] 6. Update
+
+### Resolved Questions from Design
+*(Reference answers from Phase 2.5)*
+- [Question]: [Answer that informs this plan]
+- [Question]: [Answer that informs this plan]
 
 ## Repository Context
 
@@ -93,6 +99,7 @@ tests/
 
 ## Validation
 - [ ] All design requirements addressed
+- [ ] All resolved questions from Phase 2.5 incorporated into plan
 - [ ] File paths verified to exist
 - [ ] Dependencies at latest versions
 - [ ] Test coverage planned
@@ -108,6 +115,10 @@ tests/
 
 ## Output
 Save as: `[your-docs-dir]/plans/[date]_plan_[feature_name].md`
+
+## Prerequisites
+- Ensure Phase 2.5 has been completed (all open questions from design have been resolved)
+- Reference resolved questions from the design document when creating this plan
 
 ## Next Step
 Execute the plan with 4_DEVELOPMENT_PROCESS.md

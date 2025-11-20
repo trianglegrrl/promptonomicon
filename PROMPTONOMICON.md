@@ -25,6 +25,15 @@ You must follow this six-phase process for all feature development. Each phase h
 - **Output**: `[your-docs-dir]/design/YYYYMMDD_design_[feature].md`
 - Use `date +%Y%m%d` for datestamp
 
+### Phase 2.5: Resolve Open Questions
+- Review the design document for any items in the "Open Questions" section
+- Present each open question to the developer for their feedback
+- Update the design document with the developer's answers:
+  - Move answered questions from "Open Questions" to a "Resolved Questions" section
+  - Document the decision/answer clearly in the design document
+- Use the resolved questions to inform the implementation plan
+- **Output**: Updated design document with resolved questions and answers
+
 ### Phase 3: Plan
 - Create an implementation plan using `.promptonomicon/3_BUILD_PLAN.md`
 - Break down into specific tasks, file paths, test cases
@@ -55,6 +64,7 @@ Create `.scratch/todo.md` to track your progress:
 
 - [ ] Phase 1: Understand
 - [ ] Phase 2: Design
+- [ ] Phase 2.5: Resolve Open Questions
 - [ ] Phase 3: Plan
 - [ ] Phase 4: Develop
 - [ ] Phase 5: Document
