@@ -47,11 +47,11 @@ Copy to `.scratch/todo.md`:
 - `path/to/file.js`: [what changes]
 
 ### Dependencies
-<!-- Use MCP servers if available:
-- versionator: Check latest versions with get_package_version("npm", "package-name")
-- context7: Fetch current docs with get-library-docs (requires API key)
+<!-- Use MCP servers if available to get accurate dependency information:
+- versionator: ALWAYS use when adding/updating dependencies - check latest versions with get_package_version("npm", "package-name")
+- context7: Use when you need current documentation for a library/package - get-library-docs (requires CONTEXT7_API_KEY)
 -->
-- [package@version]: [why needed]
+- [package@version]: [why needed - version from versionator MCP server]
 
 ## Implementation Steps
 
@@ -109,9 +109,51 @@ tests/
 ## Checklist
 - [ ] Steps are specific and actionable
 - [ ] All paths/commands verified
-- [ ] Dependencies checked with versionator
+- [ ] Dependencies checked with versionator MCP server (if available)
 - [ ] Tests cover success and failure
 - [ ] No silent error handling
+
+## MCP Server Usage Guidelines
+
+When creating implementation plans, use available MCP servers:
+
+### versionator (Always use for dependencies)
+- **When to use**: Before adding or updating ANY dependency
+- **How to use**: `get_package_version("ecosystem", "package-name")`
+- **Examples**:
+  - `get_package_version("npm", "react")` → Get latest React version
+  - `get_package_version("pypi", "django")` → Get latest Django version
+  - `get_package_version("rubygems", "rails")` → Get latest Rails version
+- **Why**: Ensures you're using current, supported versions and following versioning-first principles
+
+### context7 (Use for library documentation)
+- **When to use**: When you need current documentation for external libraries/frameworks
+- **How to use**: `get-library-docs("/library/path")`
+- **Examples**:
+  - `get-library-docs("/react/react")` → Get React documentation
+  - `get-library-docs("/expressjs/express")` → Get Express.js documentation
+- **Why**: Gets up-to-date documentation directly from the source
+
+### Supabase (Use for database/API work)
+- **When to use**: When working with Supabase databases, authentication, storage, or real-time features
+- **How to use**: Supabase MCP tools (if configured with SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
+- **Why**: Direct integration with Supabase services for database queries, auth operations, etc.
+
+### GitHub (Use for repository operations)
+- **When to use**: When working with GitHub repositories, issues, pull requests, or GitHub API operations
+- **How to use**: GitHub MCP tools (if configured with GITHUB_PAT)
+- **Why**: Direct access to GitHub API for repository management, issue tracking, PR creation/review
+
+### mcp-server-time (Use for time operations)
+- **When to use**: When working with dates, times, scheduling, timezone conversions, or time-based logic
+- **How to use**: Time-related MCP tools (if configured)
+- **Why**: Provides accurate time operations and timezone handling
+
+### General Rules
+1. **Always use versionator** when dealing with dependencies - it's a core requirement
+2. **Check MCP availability** before planning to use MCP features
+3. **Document MCP requirements** in your plan if they're essential
+4. **Use environment variables** - never hardcode tokens/keys
 
 ## Output
 Save as: `[your-docs-dir]/plans/[date]_plan_[feature_name].md`

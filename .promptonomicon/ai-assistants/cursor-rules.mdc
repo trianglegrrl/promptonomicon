@@ -29,8 +29,35 @@ Follow the Promptonomicon process defined in `.promptonomicon/PROMPTONOMICON.md`
 
 ## MCP Servers Available
 
-- **versionator**: Use for checking latest package versions
-- **context7**: Use for fetching current library documentation (if API key configured)
+When configured, use these MCP servers:
+
+### versionator (ALWAYS use for dependencies)
+- **When to use**: Before adding or updating ANY dependency
+- **How to use**: `get_package_version("ecosystem", "package-name")`
+- **Examples**: 
+  - `get_package_version("npm", "react")`
+  - `get_package_version("pypi", "django")`
+- **Why**: Ensures you're using current, supported versions (versionator-first principle)
+
+### context7 (For library documentation)
+- **When to use**: When you need current documentation for external libraries/frameworks
+- **How to use**: `get-library-docs("/library/path")`
+- **Requires**: CONTEXT7_API_KEY environment variable
+- **Why**: Gets up-to-date documentation directly from source
+
+### Supabase (For database/backend work)
+- **When to use**: Working with Supabase databases, authentication, storage, or real-time features
+- **Requires**: SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN environment variables
+- **Why**: Direct integration with Supabase services
+
+### GitHub (For repository operations)
+- **When to use**: Working with GitHub repositories, issues, pull requests, or GitHub API
+- **Requires**: GITHUB_PAT environment variable
+- **Why**: Direct access to GitHub API for repository management
+
+### mcp-server-time (For time operations)
+- **When to use**: Working with dates, times, timezones, scheduling, or time-based calculations
+- **Why**: Provides accurate time operations and timezone handling
 
 ## File Naming
 

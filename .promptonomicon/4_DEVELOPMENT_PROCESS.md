@@ -16,8 +16,11 @@ starting points - replace them with your actual practices.
 
 ## Available Tools
 <!-- MCP servers if configured:
-- versionator: Use for checking latest package versions before adding dependencies
+- versionator: ALWAYS use for checking latest package versions before adding dependencies
 - context7: Use for fetching current library documentation (requires CONTEXT7_API_KEY)
+- Supabase: Use for Supabase database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
+- GitHub: Use for GitHub repository/API operations (requires GITHUB_PAT)
+- mcp-server-time: Use for time/date operations and scheduling
 -->
 
 ## Development Workflow
@@ -38,12 +41,14 @@ source venv/bin/activate
 ```
 
 #### Adding New Dependencies
-<!-- When adding dependencies, use versionator MCP server if available -->
+<!-- When adding dependencies, ALWAYS use versionator MCP server if available -->
 Before adding a new dependency:
-1. Check latest version: `get_package_version("npm", "package-name")`
+1. **Check latest version** using versionator MCP: `get_package_version("npm", "package-name")`
 2. Verify compatibility with existing dependencies
-3. Update package.json with exact version from versionator
-4. Document why the dependency is needed
+3. Update package.json/requirements.txt/etc. with version from versionator
+4. Document why the dependency is needed in the plan/design document
+
+**Critical**: Never guess package versions. Always use versionator MCP server when available.
 
 ### 2. Test-Driven Development Cycle
 <!-- Define your tdd or other development workflow here, e.g. -->
@@ -143,12 +148,43 @@ throw new Error(`Expected string, got ${typeof input}`);
 throw new Error(`Value ${value} exceeds maximum ${max}`);
 ```
 
+## MCP Server Usage During Development
+
+### versionator (Required for dependencies)
+- **Always use** when adding or updating dependencies
+- **Call before**: Adding any package to package.json, requirements.txt, Gemfile, etc.
+- **Example**: `get_package_version("npm", "express")` → Returns latest version
+- **Then**: Use that exact version in your dependency file
+- **Why**: Versionator-first dependency versioning is a core principle
+
+### context7 (For documentation)
+- **Use when**: You need current documentation for libraries you're using
+- **Call when**: Learning a new API, checking function signatures, reviewing best practices
+- **Example**: `get-library-docs("/expressjs/express")` → Get Express.js docs
+- **Why**: Gets current, accurate documentation without leaving your development environment
+
+### Supabase (For database/backend)
+- **Use when**: Querying databases, managing authentication, using storage, setting up real-time
+- **Call when**: You need to interact with Supabase services
+- **Why**: Direct database access and Supabase API operations
+
+### GitHub (For repository management)
+- **Use when**: Creating issues, managing PRs, checking repository status, accessing GitHub API
+- **Call when**: You need GitHub repository or API functionality
+- **Why**: Integrated GitHub operations without switching contexts
+
+### mcp-server-time (For time operations)
+- **Use when**: Working with dates, times, timezones, scheduling, or time-based calculations
+- **Call when**: You need accurate time operations or timezone handling
+- **Why**: Reliable time operations and conversions
+
 ## Completion Checklist
 - [ ] All plan steps executed
 - [ ] All tests passing
 - [ ] Coverage >90%
 - [ ] No linting errors
 - [ ] Code follows repository patterns
+- [ ] All dependencies checked with versionator MCP (if available)
 - [ ] Update `.scratch/todo.md` - check off phase 4
 
 ## Next Step

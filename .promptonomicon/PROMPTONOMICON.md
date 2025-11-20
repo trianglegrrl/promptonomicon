@@ -101,9 +101,12 @@ Create or replace `.scratch/todo.md` to track your progress:
    - Testing approaches and coverage expectations
    - Documentation styles and conventions
 
-3. **Use MCP servers for external documentation**:
-   - **versionator**: Always check latest package versions before adding dependencies
-   - **context7**: Get current documentation for external libraries and frameworks
+3. **Use MCP servers for external documentation and tools**:
+   - **versionator**: Always check latest package versions before adding/updating dependencies
+   - **context7**: Get current documentation for external libraries and frameworks (requires API key)
+   - **Supabase**: When working with Supabase databases, authentication, or APIs
+   - **GitHub**: When working with GitHub repositories, issues, pull requests, or GitHub API
+   - **mcp-server-time**: When working with time/date operations, scheduling, or time-based logic
    - Reference official docs for frameworks, libraries, and tools in use
 
 4. **Leverage semantic search tools**:

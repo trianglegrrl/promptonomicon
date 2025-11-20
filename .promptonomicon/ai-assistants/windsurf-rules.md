@@ -23,8 +23,11 @@ For all features, bug fixes, and significant changes:
 ### Available Tools
 
 - **MCP Servers** (if configured):
-  - versionator: Package version checking
-  - context7: Library documentation fetching
+  - **versionator**: ALWAYS use for package version checking (before adding dependencies)
+  - **context7**: Library documentation fetching (requires CONTEXT7_API_KEY)
+  - **Supabase**: Database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
+  - **GitHub**: Repository/API operations (requires GITHUB_PAT)
+  - **mcp-server-time**: Time/date operations and scheduling
 
 ### Project Structure
 

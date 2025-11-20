@@ -260,8 +260,8 @@ The package is automatically published to npm when you create a new release on G
 2. **Create a release**:
    ```bash
    # Tag your release
-   git tag -a v1.3.1 -m "Release version 1.3.1"
-   git push origin v1.3.1
+   git tag -a v2.0.0 -m "Release version 2.0.0"
+   git push origin v2.0.0
 
    # Then create a release on GitHub
    # The CI/CD pipeline will automatically publish to npm

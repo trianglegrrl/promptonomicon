@@ -9,8 +9,11 @@ When working on this codebase:
 1. **Always check** `.promptonomicon/PROMPTONOMICON.md` for the development process
 2. **Follow the six phases** for any feature or significant change
 3. **Use MCP servers** if available:
-   - versionator for package versions
-   - context7 for documentation (requires API key)
+   - **versionator**: ALWAYS use for checking package versions before adding dependencies
+   - **context7**: Use for fetching current library documentation (requires CONTEXT7_API_KEY)
+   - **Supabase**: Use for Supabase database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
+   - **GitHub**: Use for GitHub repository/API operations (requires GITHUB_PAT)
+   - **mcp-server-time**: Use for time/date operations and scheduling
 
 ## Quick Reference
 
