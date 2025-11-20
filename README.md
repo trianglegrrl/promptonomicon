@@ -14,6 +14,35 @@
 
 Transform how you build software with AI through structured, documentation-driven development.
 
+## What's New in 2.2.0
+
+**🎯 Promptonomicon To-Do MCP Server** - Built-in task management for your AI workflows
+- Hierarchical task management with sub-tasks (e.g., `1.1`, `2.1.1`)
+- Project-based organization with automatic filtering
+- Scratch notes for temporary thoughts and ideas
+- Integrated with the Promptonomicon CLI (selected by default)
+- Persistent storage in `.promptonomicon/todos-{projectName}.json`
+- Query tasks by status, order, content, and parent relationships
+
+**📚 Enhanced Documentation Management**
+- **Documentation Index** - Maps all documentation with clear guidance on when to reference and update
+- **Integration Guide** - Comprehensive step-by-step process for customizing Promptonomicon to your repository
+- Enhanced Phase 2.5 with explicit user feedback requirements before proceeding
+
+**🏗️ Enhanced Development Process**
+- Comprehensive architecture principles (SOLID, DRY, KISS, YAGNI) embedded in templates
+- Test-Driven Development (TDD) requirements and testing strategies
+- Fail-hard error handling guidelines
+- Clear separation of concerns and single responsibility principles
+
+**🔌 Expanded MCP Server Support**
+- **versionator** - Always use for dependency version checking (no config needed)
+- **context7** - Up-to-date library documentation (requires API key)
+- **Supabase** - Database and API integration
+- **GitHub** - Repository and GitHub API operations
+- **mcp-server-time** - Time and date operations
+- **promptonomicon** - Built-in to-do manager (selected by default)
+
 ## What is Promptonomicon?
 
 Promptonomicon is a framework that gives AI coding assistants a consistent, high-quality development process. It works with any AI tool (Cursor, Claude, Windsurf, etc.) by providing:
@@ -138,6 +167,11 @@ promptonomicon reset --yes
   - Use `--with-mcp-servers` to reconfigure MCP
   - Use `--yes` to skip confirmation
 
+- **`promptonomicon mcp`** - Run the Promptonomicon To-Do MCP server
+  - Stdio mode (for MCP clients): `promptonomicon mcp`
+  - HTTP mode (for testing): `promptonomicon mcp --http --port 3000`
+  - See `packages/mcp-server/README.md` for full documentation
+
 ### MCP Server Integration
 
 Promptonomicon supports multiple Model Context Protocol (MCP) servers:
@@ -168,6 +202,15 @@ Promptonomicon supports multiple Model Context Protocol (MCP) servers:
 - Time and date operations
 - No configuration required
 - For scheduling, timezone conversions, and time-based logic
+
+#### promptonomicon (Built-in)
+- **Promptonomicon To-Do MCP Server** - Task and scratch note management
+- Selected by default during initialization
+- Hierarchical tasks with sub-tasks (e.g., `1.1`, `2.1.1`)
+- Project-based organization with automatic filtering
+- No configuration required
+- For tracking development progress, managing feature tasks, and scratch notes
+- See `packages/mcp-server/README.md` for full documentation
 
 To configure MCP servers:
 ```bash
@@ -312,6 +355,8 @@ The `.scratch/` directory is your temporary workspace:
 - **Key file**: `.scratch/todo.md` tracks your progress through the 6 phases
 - **Git ignored**: Nothing here gets committed (except the README)
 - **Auto-created**: The install script sets this up with usage instructions
+
+**Note**: For structured task management, use the Promptonomicon to-do MCP server (available via `promptonomicon mcp` or configured as an MCP server). It provides hierarchical tasks, scratch notes, and project-based organization. Otherwise, use `.scratch/todo.md` for simple progress tracking.
 
 ## License
 

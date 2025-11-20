@@ -55,6 +55,16 @@ When configured, use these MCP servers:
 - **When to use**: Working with dates, times, timezones, scheduling, or time-based logic
 - **Why**: Provides accurate time operations and timezone handling
 
+### promptonomicon (For to-do management)
+- **When to use**: Managing tasks, tracking progress, or storing scratch notes during development
+- **Tools available**:
+  - `todo_summary`: Generate formatted markdown summary (use when user asks "what's the status?", "show me progress", or when transitioning between phases)
+  - `todo_query_tasks`, `todo_query_notes`: Query tasks/notes programmatically (use for internal logic)
+  - `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`: Task management
+  - `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`: Note management
+- **Why**: Structured task management integrated with Promptonomicon workflow
+- **Status Reporting**: When user asks for status or progress, use `todo_summary` tool to generate a formatted markdown summary. Use `todo_query_*` tools for programmatic access in code logic.
+
 ## File Naming Convention
 
 Always use datestamps for documentation files:

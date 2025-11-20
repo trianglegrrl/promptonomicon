@@ -33,6 +33,8 @@ Copy to progress tracking (use Promptonomicon to-do MCP server if available, oth
 - [ ] 5. Document
 - [ ] 6. Update
 
+**Note**: When reporting plan status or progress checkpoints, use the `todo_summary` tool (if Promptonomicon MCP server is available) to generate a formatted markdown summary for the user.
+
 ### Resolved Questions from Design
 *(Reference answers from Phase 2.5)*
 - [Question]: [Answer that informs this plan]
@@ -231,8 +233,13 @@ When creating implementation plans, use available MCP servers:
 
 ### promptonomicon (Use for to-do management)
 - **When to use**: Managing tasks, tracking progress, or storing scratch notes during development
-- **How to use**: `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`, `todo_query_tasks`, `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`, `todo_query_notes`
+- **How to use**: 
+  - `todo_summary`: Generate formatted markdown summary (use when user asks for status/progress or when reporting plan status)
+  - `todo_query_tasks`, `todo_query_notes`: Query tasks/notes programmatically (use for internal logic)
+  - `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`: Task management
+  - `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`: Note management
 - **Why**: Structured task management integrated with Promptonomicon workflow, replaces scratch directory for task tracking
+- **Status Reporting**: When reporting plan status or progress checkpoints, use `todo_summary` tool to generate a formatted markdown summary for the user. Use `todo_query_*` tools for programmatic access in code logic.
 - **Note**: Selected by default during `promptonomicon init` or `promptonomicon reset`
 
 ### General Rules

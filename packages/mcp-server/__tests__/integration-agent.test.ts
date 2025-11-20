@@ -25,6 +25,7 @@ import { fileURLToPath } from 'url';
 import { ProjectStorage } from '../src/storage.js';
 import { TaskService } from '../src/services/taskService.js';
 import { ScratchNoteService } from '../src/services/scratchNoteService.js';
+import { SummaryService } from '../src/services/summaryService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,7 @@ const testDataDir = path.join(__dirname, '..', 'test-mcp-data');
 const storage = new ProjectStorage(testDataDir);
 const taskService = new TaskService(storage);
 const scratchNoteService = new ScratchNoteService(storage);
+const summaryService = new SummaryService(taskService, scratchNoteService);
 
 const TEST_PROJECT = 'integration-test';
 
@@ -287,6 +289,41 @@ const todoUpdateNote = tool({
   },
 });
 
+// MCP Tool: Summary
+const todoSummary = tool({
+  name: 'todo_summary',
+  description: 'Generate a markdown summary of tasks and scratch notes with smart filtering options. Use this tool when the user asks for status, progress, or a summary of current work.',
+  parameters: z.object({
+    projectName: z.string().describe('Project name (required)'),
+    status: z.enum(['pending', 'in-progress', 'completed']).nullable().optional().describe('Filter tasks by status'),
+    includeSubtasks: z.boolean().nullable().optional().default(true).describe('Include subtasks in summary'),
+    onlySubtasks: z.boolean().nullable().optional().default(false).describe('Only show subtasks (exclude root tasks)'),
+    includeCompleted: z.boolean().nullable().optional().default(true).describe('Include completed tasks and notes'),
+    collapseCompleted: z.boolean().nullable().optional().default(true).describe('Collapse completed sections in markdown'),
+    groupBy: z.enum(['status', 'hierarchy']).nullable().optional().default('status').describe('Grouping strategy: status or hierarchy'),
+  }),
+  async execute(args) {
+    if (VERBOSE) {
+      console.log(`📊 [MCP TOOL] todo_summary: project="${args.projectName}"`);
+      if (args.status) {
+        console.log(`   Filter: status=${args.status}`);
+      }
+    }
+    const summary = await summaryService.generateSummary(args.projectName, {
+      status: args.status || undefined,
+      includeSubtasks: args.includeSubtasks ?? true,
+      onlySubtasks: args.onlySubtasks ?? false,
+      includeCompleted: args.includeCompleted ?? true,
+      collapseCompleted: args.collapseCompleted ?? true,
+      groupBy: args.groupBy || 'status',
+    });
+    if (VERBOSE) {
+      console.log(`   ✅ Generated summary (${summary.length} characters)`);
+    }
+    return summary;
+  },
+});
+
 // Create agent with MCP tools
 const agent = new Agent({
   name: 'To-Do Manager Assistant',
@@ -300,6 +337,7 @@ You have access to these MCP tools:
 - todo_create_note: Create scratch notes
 - todo_query_notes: Query notes by completion status
 - todo_update_note: Update notes (including marking as completed)
+- todo_summary: Generate formatted markdown summary of tasks and notes (use when user asks for status/progress)
 
 All operations require a projectName. Use "${TEST_PROJECT}" as the project name for this test.
 
@@ -319,6 +357,7 @@ Be thorough and verify each check-off operation.`,
     todoCreateNote,
     todoQueryNotes,
     todoUpdateNote,
+    todoSummary,
   ],
 });
 
@@ -364,6 +403,8 @@ async function runIntegrationTest() {
 9. Query all completed tasks and show me the count - should be 3 completed tasks
 
 10. Query all completed notes and show me the count - should be 1 completed note
+
+11. Generate a summary using todo_summary tool to show the current status of all tasks and notes. This should produce formatted markdown.
 
 Use project name "${TEST_PROJECT}" for all operations. After each check-off operation, verify the item is actually completed by querying for it.`;
 

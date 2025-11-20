@@ -15,6 +15,11 @@ When working on this codebase:
    - **GitHub**: Use for GitHub repository/API operations (requires GITHUB_PAT)
    - **mcp-server-time**: Use for time/date operations and scheduling
    - **promptonomicon**: Use for to-do management and scratch notes (selected by default)
+     - `todo_summary`: Generate formatted markdown summary (use when user asks "what's the status?" or "show me progress")
+     - `todo_query_tasks`, `todo_query_notes`: Query tasks/notes programmatically (use for internal logic)
+     - Other tools: `todo_create_task`, `todo_update_task`, `todo_delete_task`, `todo_create_note`, etc.
+     - **When to use todo_summary**: User asks for status/progress, or when transitioning between phases
+     - **When to use todo_query_***: For programmatic task/note access in code logic
 
 ## Quick Reference
 

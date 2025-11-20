@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { TaskService } from './services/taskService.js';
 import { ScratchNoteService } from './services/scratchNoteService.js';
+import { SummaryService } from './services/summaryService.js';
 import type { FastMCP } from 'fastmcp';
 
 /**
@@ -9,7 +10,8 @@ import type { FastMCP } from 'fastmcp';
 export function registerTools(
   server: FastMCP,
   taskService: TaskService,
-  scratchNoteService: ScratchNoteService
+  scratchNoteService: ScratchNoteService,
+  summaryService: SummaryService
 ): void {
   // Task CRUD tools
   server.addTool({
@@ -228,6 +230,31 @@ export function registerTools(
         notes,
         count: notes.length,
       }, null, 2);
+    },
+  });
+
+  server.addTool({
+    name: 'todo_summary',
+    description: 'Generate a markdown summary of tasks and scratch notes with smart filtering options. Use this tool when the user asks for status, progress, or a summary of current work. Returns formatted markdown suitable for user communication.',
+    parameters: z.object({
+      projectName: z.string().describe('Project name (required)'),
+      status: z.enum(['pending', 'in-progress', 'completed']).optional().describe('Filter tasks by status'),
+      includeSubtasks: z.boolean().optional().default(true).describe('Include subtasks in summary'),
+      onlySubtasks: z.boolean().optional().default(false).describe('Only show subtasks (exclude root tasks)'),
+      includeCompleted: z.boolean().optional().default(true).describe('Include completed tasks and notes'),
+      collapseCompleted: z.boolean().optional().default(true).describe('Collapse completed sections in markdown'),
+      groupBy: z.enum(['status', 'hierarchy']).optional().default('status').describe('Grouping strategy: status or hierarchy'),
+    }),
+    execute: async (args) => {
+      const summary = await summaryService.generateSummary(args.projectName, {
+        status: args.status,
+        includeSubtasks: args.includeSubtasks,
+        onlySubtasks: args.onlySubtasks,
+        includeCompleted: args.includeCompleted,
+        collapseCompleted: args.collapseCompleted,
+        groupBy: args.groupBy,
+      });
+      return summary;
     },
   });
 }

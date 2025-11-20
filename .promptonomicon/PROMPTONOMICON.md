@@ -144,6 +144,10 @@ Create or replace `.scratch/todo.md` to track your progress:
    - **GitHub**: When working with GitHub repositories, issues, pull requests, or GitHub API
    - **mcp-server-time**: When working with time/date operations, scheduling, or time-based logic
    - **promptonomicon**: Use the to-do manager MCP server for tracking tasks and scratch notes (selected by default)
+     - **When user asks for status/progress**: Use `todo_summary` tool to generate formatted markdown summary
+     - **When transitioning between phases**: Use `todo_summary` to report current state to the user
+     - **For programmatic access**: Use `todo_query_tasks` and `todo_query_notes` for internal logic
+     - **For user communication**: Use `todo_summary` for formatted, readable status reports
    - Reference official docs for frameworks, libraries, and tools in use
 
 4. **Leverage semantic search tools**:

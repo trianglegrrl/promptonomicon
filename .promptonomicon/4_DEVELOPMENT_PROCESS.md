@@ -29,6 +29,14 @@ starting points - replace them with your actual practices.
 - Supabase: Use for Supabase database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
 - GitHub: Use for GitHub repository/API operations (requires GITHUB_PAT)
 - mcp-server-time: Use for time/date operations and scheduling
+- promptonomicon: To-do manager MCP server with the following tools:
+  - todo_summary: Generate formatted markdown summary of tasks and notes (use when user asks for status/progress)
+  - todo_query_tasks: Query tasks programmatically (use for internal logic)
+  - todo_query_notes: Query notes programmatically (use for internal logic)
+  - todo_create_task, todo_update_task, todo_delete_task: Task management
+  - todo_create_note, todo_update_note, todo_delete_note: Note management
+  - When to use todo_summary: User asks "what's the status?", "show me progress", or when transitioning between phases
+  - When to use todo_query_*: For programmatic task/note access in code logic
 -->
 
 ## Development Workflow
@@ -369,8 +377,13 @@ Before considering code complete:
 ### promptonomicon (For to-do management)
 - **Use when**: Managing tasks, tracking progress, or storing scratch notes during development
 - **Call when**: You need to create, update, query, or delete tasks or notes
-- **Tools available**: `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`, `todo_query_tasks`, `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`, `todo_query_notes`
+- **Tools available**: 
+  - `todo_summary`: Generate formatted markdown summary (use when user asks for status/progress or when transitioning between phases)
+  - `todo_query_tasks`, `todo_query_notes`: Query tasks/notes programmatically (use for internal logic)
+  - `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`: Task management
+  - `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`: Note management
 - **Why**: Structured task management integrated with Promptonomicon workflow, replaces scratch directory
+- **Status Reporting**: When user asks "what's the status?" or "show me progress", use `todo_summary` tool to generate a formatted markdown summary. Use `todo_query_*` tools for programmatic access in code logic.
 
 ## Architecture Principles
 

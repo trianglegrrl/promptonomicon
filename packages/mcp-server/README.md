@@ -88,6 +88,46 @@ The server automatically resolves the project name with the following priority:
 - **`todo_query_notes`**: Query notes by completion status
   - Parameters: `projectName`, `completed` (optional)
 
+#### Summary Tool
+
+- **`todo_summary`**: Generate a markdown summary of tasks and scratch notes with smart filtering options
+  - Parameters: 
+    - `projectName` (required) - Project name
+    - `status` (optional) - Filter tasks by status (`pending`, `in-progress`, `completed`)
+    - `includeSubtasks` (optional, default: `true`) - Include subtasks in summary
+    - `onlySubtasks` (optional, default: `false`) - Only show subtasks (exclude root tasks)
+    - `includeCompleted` (optional, default: `true`) - Include completed tasks and notes
+    - `collapseCompleted` (optional, default: `true`) - Collapse completed sections in markdown
+    - `groupBy` (optional, default: `status`) - Grouping strategy: `status` or `hierarchy`
+  - Returns: Formatted markdown summary suitable for user communication
+  - Use when: User asks for status, progress, or summary of current work
+  - Example: Get summary of all in-progress tasks: `todo_summary(projectName="my-project", status="in-progress")`
+
+## Summary Tool Usage
+
+The `todo_summary` tool generates formatted markdown summaries perfect for reporting status to users. It supports various filtering options:
+
+**Common Use Cases**:
+- **Status Report**: `todo_summary(projectName="my-project")` - Get full summary
+- **Active Work Only**: `todo_summary(projectName="my-project", includeCompleted=false)` - Hide completed items
+- **In Progress Tasks**: `todo_summary(projectName="my-project", status="in-progress")` - Only show active work
+- **Root Tasks Only**: `todo_summary(projectName="my-project", includeSubtasks=false)` - Exclude subtasks
+- **Subtasks Only**: `todo_summary(projectName="my-project", onlySubtasks=true)` - Only show subtasks
+
+**Output Format**:
+- Header with project name and statistics
+- Tasks grouped by status (pending, in-progress, completed)
+- Completed sections collapsed by default (HTML `<details>`)
+- Scratch notes section (active and completed)
+- Proper markdown formatting with checkboxes (`- [ ]` for pending, `- [x]` for completed)
+- Hierarchical indentation for subtasks
+
+**When to Use**:
+- When user asks "what's the status?" or "show me progress"
+- When transitioning between development phases
+- When providing status updates in conversations
+- Use `todo_query_tasks` and `todo_query_notes` for programmatic access; use `todo_summary` for user-facing reports
+
 ## Task Hierarchy
 
 Tasks support hierarchical sub-tasks using dot notation:

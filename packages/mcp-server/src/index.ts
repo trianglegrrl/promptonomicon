@@ -2,6 +2,7 @@ import { FastMCP } from 'fastmcp';
 import { ProjectStorage } from './storage.js';
 import { TaskService } from './services/taskService.js';
 import { ScratchNoteService } from './services/scratchNoteService.js';
+import { SummaryService } from './services/summaryService.js';
 import { registerTools } from './tools.js';
 
 /**
@@ -10,16 +11,17 @@ import { registerTools } from './tools.js';
 export function createMCPServer(dataDir?: string): FastMCP {
   const server = new FastMCP({
     name: 'Promptonomicon To-Do Manager',
-    version: '1.0.0',
+    version: '1.1.0',
   });
 
   // Initialize services
   const storage = new ProjectStorage(dataDir);
   const taskService = new TaskService(storage);
   const scratchNoteService = new ScratchNoteService(storage);
+  const summaryService = new SummaryService(taskService, scratchNoteService);
 
   // Register all tools
-  registerTools(server, taskService, scratchNoteService);
+  registerTools(server, taskService, scratchNoteService, summaryService);
 
   return server;
 }
