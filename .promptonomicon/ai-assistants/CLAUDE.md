@@ -70,7 +70,7 @@ date +%Y%m%d
 ## Working Directory
 
 - Use `.scratch/` for temporary work and experiments
-- Track progress in `.scratch/todo.md` using the six-phase checklist
+- For task management: Use the Promptonomicon to-do MCP server if available (via `promptonomicon mcp` or configured as an MCP server). Otherwise, track progress in `.scratch/todo.md` using the six-phase checklist
 - All scratch work is gitignored
 
 ## Important Notes

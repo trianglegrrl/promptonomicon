@@ -24,7 +24,7 @@ Creates actionable plans for Phase 3 (Plan) of the development process.
 [How you'll implement the design in 1 paragraph]
 
 ### Process Checklist
-Copy to `.scratch/todo.md`:
+Copy to progress tracking (use Promptonomicon to-do MCP server if available, otherwise `.scratch/todo.md`):
 - [x] 1. Understand
 - [x] 2. Design
 - [x] 2.5. Resolve Open Questions
@@ -228,6 +228,12 @@ When creating implementation plans, use available MCP servers:
 - **When to use**: When working with dates, times, scheduling, timezone conversions, or time-based logic
 - **How to use**: Time-related MCP tools (if configured)
 - **Why**: Provides accurate time operations and timezone handling
+
+### promptonomicon (Use for to-do management)
+- **When to use**: Managing tasks, tracking progress, or storing scratch notes during development
+- **How to use**: `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`, `todo_query_tasks`, `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`, `todo_query_notes`
+- **Why**: Structured task management integrated with Promptonomicon workflow, replaces scratch directory for task tracking
+- **Note**: Selected by default during `promptonomicon init` or `promptonomicon reset`
 
 ### General Rules
 1. **Always use versionator** when dealing with dependencies - it's a core requirement

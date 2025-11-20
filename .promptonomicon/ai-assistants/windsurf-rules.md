@@ -28,6 +28,7 @@ For all features, bug fixes, and significant changes:
   - **Supabase**: Database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
   - **GitHub**: Repository/API operations (requires GITHUB_PAT)
   - **mcp-server-time**: Time/date operations and scheduling
+  - **promptonomicon**: To-do management and scratch notes (selected by default)
 
 ### Project Structure
 
@@ -39,7 +40,7 @@ ai-docs/                  # Generated documentation
   ai-implementation/     # Reality documentation
   features/              # User-facing docs
 .scratch/                # Temporary workspace
-  todo.md               # Progress tracking
+  todo.md               # Progress tracking (use Promptonomicon to-do MCP server if available)
 ```
 
 ### Key Principles

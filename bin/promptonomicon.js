@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { existsSync, readFileSync } from 'fs';
 import os from 'os';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import inquirer from 'inquirer';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -98,6 +98,12 @@ const MCP_SERVER_TEMPLATES = {
     command: 'npx',
     args: ['-y', '@versionator/mcp-server'],
     description: 'Check latest versions of packages across all ecosystems',
+    requiresVars: []
+  },
+  promptonomicon: {
+    command: 'npx',
+    args: ['-y', 'promptonomicon-mcp', '--data-dir', '.promptonomicon'],
+    description: 'Promptonomicon to-do manager MCP server (selected by default)',
     requiresVars: []
   }
 };
@@ -221,10 +227,12 @@ async function promptForMCPServers(skipPrompts = false, filterServers = null) {
   const serverChoices = [];
   for (const [serverName, serverInfo] of Object.entries(MCP_SERVER_TEMPLATES)) {
     if (!filterServers || filterServers.includes(serverName)) {
+      // promptonomicon is checked by default
+      const isDefault = serverName === 'promptonomicon';
       serverChoices.push({
         name: `${serverName} - ${serverInfo.description}`,
         value: serverName,
-        checked: !filterServers || filterServers.includes(serverName) // If filtering, auto-check filtered servers
+        checked: isDefault || (!filterServers || filterServers.includes(serverName)) // promptonomicon checked by default
       });
     }
   }
@@ -483,6 +491,52 @@ async function createGitignoreEntry() {
     console.warn(chalk.yellow('Warning: Could not update .gitignore'));
   }
 }
+
+// MCP command
+program
+  .command('mcp')
+  .description('Run the Promptonomicon to-do manager MCP server')
+  .option('-p, --project-name <name>', 'Project name (overrides auto-detection)')
+  .option('--http', 'Start HTTP server instead of stdio')
+  .option('--port <port>', 'HTTP server port (default: 3000)', '3000')
+  .option('--data-dir <dir>', 'Data directory (default: .promptonomicon)', '.promptonomicon')
+  .action((options) => {
+    // Spawn the MCP server process
+    const args = [];
+    
+    if (options.projectName) {
+      args.push('--project-name', options.projectName);
+    }
+    if (options.http) {
+      args.push('--http');
+      if (options.port) {
+        args.push('--port', options.port);
+      }
+    }
+    if (options.dataDir) {
+      args.push('--data-dir', options.dataDir);
+    }
+    
+    const child = spawn('npx', ['-y', 'promptonomicon-mcp', ...args], {
+      stdio: 'inherit',
+      shell: true
+    });
+    
+    child.on('error', (error) => {
+      console.error(`Failed to start MCP server: ${error.message}`);
+      process.exit(1);
+    });
+    
+    process.on('SIGINT', () => {
+      child.kill('SIGINT');
+      process.exit(0);
+    });
+    
+    process.on('SIGTERM', () => {
+      child.kill('SIGTERM');
+      process.exit(0);
+    });
+  });
 
 // Init command
 program

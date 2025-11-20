@@ -92,6 +92,18 @@ describe('MCP server functionality', () => {
       expect(output).toContain('MCP server configurations:');
       expect(output).toContain('Generic (.mcp.json)');
     });
+
+    test('should configure promptonomicon MCP server with data-dir', () => {
+      execSync(`node ${CLI_PATH} init -y --with-mcp-servers=promptonomicon`, { encoding: 'utf8' });
+
+      const config = JSON.parse(fs.readFileSync('.mcp.json', 'utf8'));
+
+      expect(config.mcpServers).toHaveProperty('promptonomicon');
+      expect(config.mcpServers.promptonomicon.command).toBe('npx');
+      expect(config.mcpServers.promptonomicon.args).toContain('promptonomicon-mcp');
+      expect(config.mcpServers.promptonomicon.args).toContain('--data-dir');
+      expect(config.mcpServers.promptonomicon.args).toContain('.promptonomicon');
+    });
   });
 
   describe('MCP server merging', () => {

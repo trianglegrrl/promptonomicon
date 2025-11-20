@@ -14,6 +14,7 @@ When working on this codebase:
    - **Supabase**: Use for Supabase database/API operations (requires SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN)
    - **GitHub**: Use for GitHub repository/API operations (requires GITHUB_PAT)
    - **mcp-server-time**: Use for time/date operations and scheduling
+   - **promptonomicon**: Use for to-do management and scratch notes (selected by default)
 
 ## Quick Reference
 
@@ -22,7 +23,7 @@ When working on this codebase:
 - Planning templates: `.promptonomicon/3_BUILD_PLAN.md`
 - Development standards: `.promptonomicon/4_DEVELOPMENT_PROCESS.md`
 - Documentation outputs: `ai-docs/`
-- Temporary workspace: `.scratch/`
+- Temporary workspace: `.scratch/` (use Promptonomicon to-do MCP server if available, otherwise use `.scratch/todo.md` for progress tracking)
 
 ## Project Standards
 

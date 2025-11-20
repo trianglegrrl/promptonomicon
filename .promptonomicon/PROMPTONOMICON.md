@@ -99,6 +99,8 @@ The `.scratch/` directory is your temporary workspace for the current feature:
 - **Key file**: `.scratch/todo.md` tracks your progress through the phases
 - **Clean slate**: Clear it out between features
 
+**Note**: For structured task management, use the Promptonomicon to-do MCP server if it's available (via `promptonomicon mcp` or configured as an MCP server). It provides hierarchical tasks, scratch notes, and project-based organization. Otherwise, use `.scratch/todo.md` for progress tracking.
+
 ### Progress Tracking
 
 Create or replace `.scratch/todo.md` to track your progress:
@@ -141,6 +143,7 @@ Create or replace `.scratch/todo.md` to track your progress:
    - **Supabase**: When working with Supabase databases, authentication, or APIs
    - **GitHub**: When working with GitHub repositories, issues, pull requests, or GitHub API
    - **mcp-server-time**: When working with time/date operations, scheduling, or time-based logic
+   - **promptonomicon**: Use the to-do manager MCP server for tracking tasks and scratch notes (selected by default)
    - Reference official docs for frameworks, libraries, and tools in use
 
 4. **Leverage semantic search tools**:

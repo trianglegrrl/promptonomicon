@@ -69,3 +69,5 @@ Use datestamps: `date +%Y%m%d`
 ## Scratch Directory
 
 Use `.scratch/` for temporary work and track progress in `.scratch/todo.md`
+
+**Note**: For structured task management, use the Promptonomicon to-do MCP server if it's available (via `promptonomicon mcp` or configured as an MCP server). It provides hierarchical tasks, scratch notes, and project-based organization. Otherwise, use `.scratch/todo.md` for progress tracking.

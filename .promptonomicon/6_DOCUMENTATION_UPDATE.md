@@ -144,5 +144,5 @@ When adding features, systematically check each documentation type:
 
 ## Completion
 - [ ] All docs synchronized
-- [ ] Update `.scratch/todo.md` - check off phase 6
+- [ ] Update progress tracking - check off phase 6 (use Promptonomicon to-do MCP server if available, otherwise `.scratch/todo.md`)
 - [ ] Feature is DONE! 🎉

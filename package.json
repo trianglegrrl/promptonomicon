@@ -1,6 +1,6 @@
 {
   "name": "promptonomicon",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Transform how you build software with AI through structured, documentation-driven development",
   "main": "index.js",
   "type": "module",
@@ -14,7 +14,10 @@
     "test:verbose": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
     "test:ci": "NODE_OPTIONS=--experimental-vm-modules jest --ci --coverage --maxWorkers=2",
     "prepare": "echo \"Package prepared successfully\"",
-    "lint": "echo \"Linting will be added\""
+    "lint": "echo \"Linting will be added\"",
+    "build:mcp": "cd packages/mcp-server && yarn build",
+    "link:all": "yarn link && cd packages/mcp-server && yarn build && yarn link",
+    "unlink:all": "yarn unlink && cd packages/mcp-server && yarn unlink"
   },
   "repository": {
     "type": "git",
@@ -64,6 +67,7 @@
     "chalk": "^5.6.2",
     "commander": "^14.0.2",
     "inquirer": "^13.0.1",
+    "openai-agents": "^1.1.0",
     "ora": "^9.0.0"
   },
   "devDependencies": {

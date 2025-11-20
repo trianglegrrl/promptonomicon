@@ -12,7 +12,7 @@ starting points - replace them with your actual practices.
 - [ ] Plan document complete and reviewed
 - [ ] Dependencies installed
 - [ ] Test framework ready
-- [ ] `.scratch/todo.md` shows phases 1-3 complete
+- [ ] Progress tracking shows phases 1-3 complete (use Promptonomicon to-do MCP server if available, otherwise `.scratch/todo.md`)
 - [ ] Documentation Index reviewed (`.promptonomicon/DOCUMENTATION_INDEX.md`) - identified relevant docs to reference
 
 **Reference Documentation**:
@@ -366,6 +366,12 @@ Before considering code complete:
 - **Call when**: You need accurate time operations or timezone handling
 - **Why**: Reliable time operations and conversions
 
+### promptonomicon (For to-do management)
+- **Use when**: Managing tasks, tracking progress, or storing scratch notes during development
+- **Call when**: You need to create, update, query, or delete tasks or notes
+- **Tools available**: `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`, `todo_query_tasks`, `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`, `todo_query_notes`
+- **Why**: Structured task management integrated with Promptonomicon workflow, replaces scratch directory
+
 ## Architecture Principles
 
 ### Layered Architecture (When Applicable)
@@ -447,7 +453,7 @@ Before considering code complete:
 - [ ] Code follows repository patterns
 - [ ] All dependencies checked with versionator MCP (if available)
 - [ ] Code review checklist completed
-- [ ] Update `.scratch/todo.md` - check off phase 4
+- [ ] Update progress tracking - check off phase 4 (use Promptonomicon to-do MCP server if available, otherwise `.scratch/todo.md`)
 
 ## Next Step
 Document what you built with 5_BUILD_IMPLEMENTATION.md
