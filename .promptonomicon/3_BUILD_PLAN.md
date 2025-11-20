@@ -55,37 +55,82 @@ Copy to `.scratch/todo.md`:
 
 ## Implementation Steps
 
+Follow TDD (Test-Driven Development) for each step: RED → GREEN → REFACTOR
+
 ### Step 1: [Setup/Foundation]
-- [ ] Create directories:
-  ```bash
-  mkdir -p src/feature
-  ```
-- [ ] Create files:
-  - `src/feature/index.js`: Entry point
-  - `src/feature/core.js`: Main logic
+- [ ] Create directory structure following project conventions
+- [ ] Create initial files:
+  - Entry point files
+  - Core logic files
+  - Test files (write tests first)
+- [ ] Set up test framework if needed
+- [ ] Verify starting state: tests run (should be empty/passing)
 
-### Step 2: [Core Implementation]
-- [ ] Implement [specific functionality]:
-  ```javascript
-  // Structure/pseudocode
-  function feature() {
-    // Validate inputs (fail hard)
-    // Process
-    // Return result
-  }
-  ```
+**Principles to Apply**:
+- Keep it simple (KISS)
+- Only create what's needed now (YAGNI)
+- Clear, descriptive file names
+- Logical directory structure
 
-### Step 3: [Testing]
-- [ ] Unit tests in `tests/feature.test.js`:
-  - Test: valid input → expected output
-  - Test: invalid input → throws error
-  - Test: edge cases
-- [ ] Run: `npm test`
+### Step 2: [Core Implementation - TDD Cycle]
+
+For each component/function, follow RED-GREEN-REFACTOR:
+
+#### RED: Write Tests First
+- [ ] Write failing test for happy path
+- [ ] Write failing test for error cases
+- [ ] Write failing test for edge cases
+- [ ] Run tests - confirm they fail for the right reason
+
+#### GREEN: Implement Minimum Code
+- [ ] Write minimum code to make tests pass
+- [ ] No premature optimization
+- [ ] No over-engineering
+- [ ] Run tests - confirm all pass
+
+#### REFACTOR: Improve Quality
+- [ ] Extract common functionality (DRY)
+- [ ] Apply SOLID principles
+- [ ] Improve naming for clarity
+- [ ] Separate concerns if needed
+- [ ] Run tests - confirm still passing
+
+**Implementation Guidelines**:
+- Validate inputs at function boundaries (fail-hard)
+- Single responsibility per function/class
+- Small functions (< 20 lines, max ~50)
+- Descriptive names that reveal intent
+- Limit parameters (use objects/structs for many params)
+
+### Step 3: [Testing - Comprehensive Coverage]
+- [ ] Unit tests for all components:
+  - Happy path: valid input → expected output
+  - Error path: invalid input → throws error
+  - Edge cases: empty, null, boundary conditions
+- [ ] Integration tests for component interactions
+- [ ] Run all tests: `npm test` (or equivalent)
+- [ ] Verify coverage >90%
+- [ ] All tests passing before moving on
+
+**Testing Principles**:
+- Test behavior, not implementation
+- One test = one behavior
+- Clear test names describing what is tested
+- Tests are independent and isolated
+- Use mocks/stubs for external dependencies
 
 ### Step 4: [Integration]
-- [ ] Wire into main app
-- [ ] Update configuration
-- [ ] Verify end-to-end
+- [ ] Wire components into main application
+- [ ] Update configuration if needed
+- [ ] Verify end-to-end workflow
+- [ ] Test integration points
+- [ ] Ensure error handling works across boundaries
+
+**Integration Principles**:
+- Test integration points thoroughly
+- Verify data flow between components
+- Confirm error propagation works correctly
+- Ensure separation of concerns maintained
 
 ## File Structure
 ```
@@ -98,12 +143,39 @@ tests/
 ```
 
 ## Validation
+
+### Plan Completeness
 - [ ] All design requirements addressed
 - [ ] All resolved questions from Phase 2.5 incorporated into plan
-- [ ] File paths verified to exist
-- [ ] Dependencies at latest versions
-- [ ] Test coverage planned
-- [ ] Fail-hard approach throughout
+- [ ] File paths verified to exist or will be created
+- [ ] Dependencies at latest versions (checked with versionator MCP if available)
+
+### Architecture & Design Principles
+- [ ] SOLID principles applied in component design
+- [ ] Separation of concerns maintained (presentation, business, data)
+- [ ] DRY principle: no planned code duplication
+- [ ] KISS principle: simplest solution chosen
+- [ ] YAGNI principle: only necessary features planned
+
+### Testing Strategy
+- [ ] TDD approach planned (tests before implementation)
+- [ ] Unit tests planned for all components
+- [ ] Integration tests planned for component interactions
+- [ ] Edge cases identified and testable
+- [ ] Test coverage target >90% planned
+
+### Code Quality
+- [ ] Fail-hard error handling planned
+- [ ] Input validation planned at boundaries
+- [ ] Single responsibility per component
+- [ ] Dependencies are minimal and explicit
+- [ ] Clear naming conventions will be followed
+
+### Implementation Approach
+- [ ] Red-Green-Refactor cycle will be followed
+- [ ] Small, incremental commits planned
+- [ ] Code review checklist will be used
+- [ ] Documentation plan in place
 ```
 
 ## Checklist

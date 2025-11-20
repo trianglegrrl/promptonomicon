@@ -10,6 +10,37 @@ You must follow this six-phase process for all feature development. Each phase h
 2. **Fail-Hard Policy**: No silent failures, no fallback values, no suppressed errors
 3. **Process Discipline**: Complete all six phases in order, no shortcuts
 4. **Clean Code**: Follow SOLID, DRY, KISS, YAGNI principles
+5. **Test-Driven Development**: Write tests before implementation (Red-Green-Refactor)
+6. **Separation of Concerns**: Separate presentation, business logic, and data access
+7. **Single Responsibility**: Each component/module has one clear purpose
+8. **Dependency Management**: Dependencies are explicit, minimal, and injected when possible
+
+### Software Architecture Principles
+
+**SOLID Principles**:
+- **S**ingle Responsibility: One reason to change per component
+- **O**pen/Closed: Open for extension, closed for modification
+- **L**iskov Substitution: Subtypes must be substitutable
+- **I**nterface Segregation: Small, focused interfaces
+- **D**ependency Inversion: Depend on abstractions, not concretions
+
+**Code Quality Principles**:
+- **DRY** (Don't Repeat Yourself): Eliminate duplication
+- **KISS** (Keep It Simple, Stupid): Prefer simple solutions
+- **YAGNI** (You Aren't Gonna Need It): Build only what's needed
+- **Separation of Concerns**: Distinct responsibilities for each layer
+
+**Testing Principles**:
+- **TDD** (Test-Driven Development): Tests before code (Red-Green-Refactor)
+- **Test Coverage**: >90% coverage target
+- **Test Isolation**: Tests don't depend on each other
+- **Behavior Testing**: Test what code does, not how it does it
+
+**Error Handling Principles**:
+- **Fail Fast**: Validate early, fail immediately
+- **Fail Hard**: No silent failures or fallback values
+- **Clear Errors**: Specific, actionable error messages
+- **Context Preservation**: Include relevant information in errors
 
 ## The Process
 
