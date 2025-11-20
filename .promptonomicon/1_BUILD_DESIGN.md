@@ -172,7 +172,7 @@ Creates design documents for Phases 1 (Understand) and 2 (Design) of the develop
 ## Open Questions
 - [ ] [Questions needing answers]
 
-**Note**: After completing Phase 2, proceed to Phase 2.5 to resolve any open questions with the developer before moving to Phase 3 (Plan).
+**Note**: After completing Phase 2, proceed to Phase 2.5 to resolve any open questions. **You MUST ask the user for feedback on each open question - do NOT make decisions on your own. Wait for the user's response before proceeding to Phase 3 (Plan).**
 
 ## Resolved Questions
 *(Move questions here after Phase 2.5)*
@@ -205,4 +205,7 @@ Save as: `[your-docs-dir]/design/[date]_design_[feature_name].md`
 
 ## Next Step
 1. If the design document contains "Open Questions", proceed to Phase 2.5 to resolve them with the developer
+   - **CRITICAL**: You MUST ask the user for feedback on each open question
+   - **DO NOT** make decisions on how to proceed - wait for the user's input
+   - **DO NOT** proceed to Phase 3 until the user confirms all questions are resolved
 2. Once all questions are resolved (or if there are no open questions), proceed to Phase 3 using 3_BUILD_PLAN.md

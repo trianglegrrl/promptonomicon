@@ -58,10 +58,13 @@ You must follow this six-phase process for all feature development. Each phase h
 
 ### Phase 2.5: Resolve Open Questions
 - Review the design document for any items in the "Open Questions" section
-- Present each open question to the developer for their feedback
+- **CRITICAL**: Present each open question to the developer and ASK for their feedback
+- **DO NOT** make decisions on how to proceed - you MUST ask the user for their input
+- **WAIT** for the developer's response before updating the design document
 - Update the design document with the developer's answers:
   - Move answered questions from "Open Questions" to a "Resolved Questions" section
   - Document the decision/answer clearly in the design document
+- **DO NOT** proceed to Phase 3 until the developer confirms all questions are resolved
 - Use the resolved questions to inform the implementation plan
 - **Output**: Updated design document with resolved questions and answers
 

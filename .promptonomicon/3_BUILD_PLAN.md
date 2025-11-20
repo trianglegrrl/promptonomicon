@@ -239,7 +239,8 @@ When creating implementation plans, use available MCP servers:
 Save as: `[your-docs-dir]/plans/[date]_plan_[feature_name].md`
 
 ## Prerequisites
-- Ensure Phase 2.5 has been completed (all open questions from design have been resolved)
+- Ensure Phase 2.5 has been completed (all open questions from design have been resolved with user feedback)
+- **DO NOT** proceed to this phase until the user has confirmed all questions from Phase 2.5 are resolved
 - Reference resolved questions from the design document when creating this plan
 
 ## Next Step
