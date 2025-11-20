@@ -14,6 +14,35 @@
 
 Transform how you build software with AI through structured, documentation-driven development.
 
+## What's New in 2.2.0
+
+**🎯 Promptonomicon To-Do MCP Server** - Built-in task management for your AI workflows
+- Hierarchical task management with sub-tasks (e.g., `1.1`, `2.1.1`)
+- Project-based organization with automatic filtering
+- Scratch notes for temporary thoughts and ideas
+- Integrated with the Promptonomicon CLI (selected by default)
+- Persistent storage in `.promptonomicon/todos-{projectName}.json`
+- Query tasks by status, order, content, and parent relationships
+
+**📚 Enhanced Documentation Management**
+- **Documentation Index** - Maps all documentation with clear guidance on when to reference and update
+- **Integration Guide** - Comprehensive step-by-step process for customizing Promptonomicon to your repository
+- Enhanced Phase 2.5 with explicit user feedback requirements before proceeding
+
+**🏗️ Enhanced Development Process**
+- Comprehensive architecture principles (SOLID, DRY, KISS, YAGNI) embedded in templates
+- Test-Driven Development (TDD) requirements and testing strategies
+- Fail-hard error handling guidelines
+- Clear separation of concerns and single responsibility principles
+
+**🔌 Expanded MCP Server Support**
+- **versionator** - Always use for dependency version checking (no config needed)
+- **context7** - Up-to-date library documentation (requires API key)
+- **Supabase** - Database and API integration
+- **GitHub** - Repository and GitHub API operations
+- **mcp-server-time** - Time and date operations
+- **promptonomicon** - Built-in to-do manager (selected by default)
+
 ## What is Promptonomicon?
 
 Promptonomicon is a framework that gives AI coding assistants a consistent, high-quality development process. It works with any AI tool (Cursor, Claude, Windsurf, etc.) by providing:
@@ -32,6 +61,7 @@ Every feature follows these six phases:
 
 1. **Understand** - Investigate requirements and context thoroughly
 2. **Design** - Create comprehensive design documentation
+   - **Phase 2.5**: Resolve Open Questions - Get developer feedback on design questions
 3. **Plan** - Build detailed, actionable implementation plans
 4. **Develop** - Execute with test-driven development
 5. **Document** - Capture what was actually built
@@ -47,6 +77,7 @@ your-repo/
 │   ├── 4_DEVELOPMENT_PROCESS.md # Your coding standards
 │   ├── 5_BUILD_IMPLEMENTATION.md # Reality documentation
 │   ├── 6_DOCUMENTATION_UPDATE.md # Update checklist
+│   ├── DOCUMENTATION_INDEX.md  # Maps all docs, when to reference/update
 │   ├── PROMPTONOMICON.md       # AI entrypoint - "start here"
 │   └── ai-assistants/          # AI tool configurations (copied during init)
 │       ├── cursor-rules.mdc    # Cursor integration (.mdc format)
@@ -73,17 +104,17 @@ your-repo/
 
 ### Installation
 
-#### NPM (Recommended)
+#### Yarn (Recommended)
 
 ```bash
 # Install globally
-npm install -g promptonomicon
+yarn global add promptonomicon
 
 # Or add to your project
-npm install --save-dev promptonomicon
+yarn add --dev promptonomicon
 
-# If installed locally, use npx
-npx promptonomicon init
+# If installed locally
+yarn promptonomicon init
 ```
 
 #### Yarn
@@ -136,13 +167,19 @@ promptonomicon reset --yes
   - Use `--with-mcp-servers` to reconfigure MCP
   - Use `--yes` to skip confirmation
 
+- **`promptonomicon mcp`** - Run the Promptonomicon To-Do MCP server
+  - Stdio mode (for MCP clients): `promptonomicon mcp`
+  - HTTP mode (for testing): `promptonomicon mcp --http --port 3000`
+  - See `packages/mcp-server/README.md` for full documentation
+
 ### MCP Server Integration
 
-Promptonomicon can configure two Model Context Protocol (MCP) servers:
+Promptonomicon supports multiple Model Context Protocol (MCP) servers:
 
-#### versionator
+#### versionator (Recommended)
 - Checks latest versions of packages across all ecosystems
 - Works automatically without configuration
+- Always use when adding/updating dependencies
 - Example: `get_package_version("npm", "react")` returns latest React version
 
 #### context7
@@ -151,16 +188,40 @@ Promptonomicon can configure two Model Context Protocol (MCP) servers:
 - Get your API key at [context7.com](https://context7.com)
 - Example: `get-library-docs("/react/react")` returns current React docs
 
+#### Supabase
+- Direct integration with Supabase databases and APIs
+- Requires `SUPABASE_PROJECT_REF` and `SUPABASE_ACCESS_TOKEN` environment variables
+- For database queries, authentication, storage, and real-time features
+
+#### GitHub
+- GitHub repository and API operations
+- Requires `GITHUB_PAT` environment variable (GitHub Personal Access Token)
+- For repository management, issues, pull requests, and GitHub API access
+
+#### mcp-server-time
+- Time and date operations
+- No configuration required
+- For scheduling, timezone conversions, and time-based logic
+
+#### promptonomicon (Built-in)
+- **Promptonomicon To-Do MCP Server** - Task and scratch note management
+- Selected by default during initialization
+- Hierarchical tasks with sub-tasks (e.g., `1.1`, `2.1.1`)
+- Project-based organization with automatic filtering
+- No configuration required
+- For tracking development progress, managing feature tasks, and scratch notes
+- See `packages/mcp-server/README.md` for full documentation
+
 To configure MCP servers:
 ```bash
-# Interactive selection
+# Interactive selection (prompts for each server)
 promptonomicon init --with-mcp-servers
 
-# Specific servers
-promptonomicon init --with-mcp-servers=versionator,context7
+# Specific servers (comma-separated)
+promptonomicon init --with-mcp-servers=versionator,supabase,github
 
-# Non-interactive with defaults
-promptonomicon init -y --with-mcp-servers
+# Non-interactive (skips prompts, no MCP servers configured)
+promptonomicon init -y
 ```
 
 ### AI Assistant Integration
@@ -180,31 +241,33 @@ The configuration files instruct AI assistants to follow the Promptonomicon proc
 1. **Copy the framework** to your repository:
    - `.promptonomicon/` directory (including all templates and PROMPTONOMICON.md)
 
-2. **Customize the templates** in `.promptonomicon/` with your:
-   - Design principles and architecture patterns
-   - Coding standards and testing approach
-   - Documentation style and requirements
-
-3. **Use with any AI assistant**:
+2. **Customize the templates** using your AI assistant:
    ```
-   >  "Follow the Promptonomicon process in
-      .promptonomicon/PROMPTONOMICON.md to
-      implement [feature]"
+   "Follow the process in .promptonomicon/INTEGRATION.md to customize PROMPTONOMICON for this project"
+   ```
+   This will automatically:
+   - Investigate your repository structure and patterns
+   - Research best practices for your language/framework
+   - Customize all templates with your specific requirements
+   - Create a documentation index mapping all your docs
 
+3. **Use with any AI assistant** to build features:
+   ```
+   "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md to implement [feature]"
    ```
 
-See [INTEGRATION.md](INTEGRATION.md) for detailed setup instructions, or [EXAMPLE_REPO_CONVERSION.md](EXAMPLE_REPO_CONVERSION.md) for step-by-step examples of converting an existing repository.
+See `.promptonomicon/INTEGRATION.md` for detailed customization instructions, including quick start prompts and comprehensive step-by-step guidance for converting an existing repository.
 
 ### This Repository
 
 This repository serves as both the npm package source and a living example:
 
-- **NPM package**: Published to [npmjs.com/package/promptonomicon](https://www.npmjs.com/package/promptonomicon)
+- **NPM package**: Published to [npmjs.com/package/promptonomicon](https://www.npmjs.com/package/promptonomicon) (can be installed with yarn or npm)
 - **Framework templates**: `.promptonomicon/` directory containing all templates
 - **AI assistant configs**: `.promptonomicon/ai-assistants/` for tool integration
 - **MCP server config**: `.promptonomicon/.mcp.json` template
 - **Example output**: `ai-docs-sample/` shows what gets generated
-- **Integration guide**: [INTEGRATION.md](INTEGRATION.md) for detailed setup
+- **Integration guide**: `.promptonomicon/INTEGRATION.md` for detailed setup
 
 ### Development
 
@@ -216,20 +279,20 @@ git clone https://github.com/trianglegrrl/promptonomicon.git
 cd promptonomicon
 
 # Install dependencies
-npm install
+yarn install
 
 # Test locally
-npm link
+yarn link
 promptonomicon doctor
 
 # Run tests
-npm test
+yarn test
 
 # Run tests with coverage
-npm run test:coverage
+yarn test:coverage
 
 # Run tests in watch mode
-npm run test:watch
+yarn test:watch
 ```
 
 ### Testing
@@ -243,9 +306,9 @@ Promptonomicon includes comprehensive test coverage:
 
 Run the test suite:
 ```bash
-npm test              # Run all tests
-npm run test:coverage # Generate coverage report
-npm run test:watch    # Watch mode for development
+yarn test              # Run all tests
+yarn test:coverage     # Generate coverage report
+yarn test:watch        # Watch mode for development
 ```
 
 ### Publishing
@@ -260,11 +323,12 @@ The package is automatically published to npm when you create a new release on G
 2. **Create a release**:
    ```bash
    # Tag your release
-   git tag -a v1.3.1 -m "Release version 1.3.1"
-   git push origin v1.3.1
+   git tag -a v2.0.0 -m "Release version 2.0.0"
+   git push origin v2.0.0
 
    # Then create a release on GitHub
    # The CI/CD pipeline will automatically publish to npm
+   # (package can be installed with yarn or npm after publishing)
    ```
 
 ## Key Principles
@@ -291,6 +355,8 @@ The `.scratch/` directory is your temporary workspace:
 - **Key file**: `.scratch/todo.md` tracks your progress through the 6 phases
 - **Git ignored**: Nothing here gets committed (except the README)
 - **Auto-created**: The install script sets this up with usage instructions
+
+**Note**: For structured task management, use the Promptonomicon to-do MCP server (available via `promptonomicon mcp` or configured as an MCP server). It provides hierarchical tasks, scratch notes, and project-based organization. Otherwise, use `.scratch/todo.md` for simple progress tracking.
 
 ## License
 

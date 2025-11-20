@@ -10,6 +10,37 @@ You must follow this six-phase process for all feature development. Each phase h
 2. **Fail-Hard Policy**: No silent failures, no fallback values, no suppressed errors
 3. **Process Discipline**: Complete all six phases in order, no shortcuts
 4. **Clean Code**: Follow SOLID, DRY, KISS, YAGNI principles
+5. **Test-Driven Development**: Write tests before implementation (Red-Green-Refactor)
+6. **Separation of Concerns**: Separate presentation, business logic, and data access
+7. **Single Responsibility**: Each component/module has one clear purpose
+8. **Dependency Management**: Dependencies are explicit, minimal, and injected when possible
+
+### Software Architecture Principles
+
+**SOLID Principles**:
+- **S**ingle Responsibility: One reason to change per component
+- **O**pen/Closed: Open for extension, closed for modification
+- **L**iskov Substitution: Subtypes must be substitutable
+- **I**nterface Segregation: Small, focused interfaces
+- **D**ependency Inversion: Depend on abstractions, not concretions
+
+**Code Quality Principles**:
+- **DRY** (Don't Repeat Yourself): Eliminate duplication
+- **KISS** (Keep It Simple, Stupid): Prefer simple solutions
+- **YAGNI** (You Aren't Gonna Need It): Build only what's needed
+- **Separation of Concerns**: Distinct responsibilities for each layer
+
+**Testing Principles**:
+- **TDD** (Test-Driven Development): Tests before code (Red-Green-Refactor)
+- **Test Coverage**: >90% coverage target
+- **Test Isolation**: Tests don't depend on each other
+- **Behavior Testing**: Test what code does, not how it does it
+
+**Error Handling Principles**:
+- **Fail Fast**: Validate early, fail immediately
+- **Fail Hard**: No silent failures or fallback values
+- **Clear Errors**: Specific, actionable error messages
+- **Context Preservation**: Include relevant information in errors
 
 ## The Process
 
@@ -27,10 +58,13 @@ You must follow this six-phase process for all feature development. Each phase h
 
 ### Phase 2.5: Resolve Open Questions
 - Review the design document for any items in the "Open Questions" section
-- Present each open question to the developer for their feedback
+- **CRITICAL**: Present each open question to the developer and ASK for their feedback
+- **DO NOT** make decisions on how to proceed - you MUST ask the user for their input
+- **WAIT** for the developer's response before updating the design document
 - Update the design document with the developer's answers:
   - Move answered questions from "Open Questions" to a "Resolved Questions" section
   - Document the decision/answer clearly in the design document
+- **DO NOT** proceed to Phase 3 until the developer confirms all questions are resolved
 - Use the resolved questions to inform the implementation plan
 - **Output**: Updated design document with resolved questions and answers
 
@@ -64,6 +98,8 @@ The `.scratch/` directory is your temporary workspace for the current feature:
 - **Git ignored**: Nothing here gets committed (it's a safe space for messy work)
 - **Key file**: `.scratch/todo.md` tracks your progress through the phases
 - **Clean slate**: Clear it out between features
+
+**Note**: For structured task management, use the Promptonomicon to-do MCP server if it's available (via `promptonomicon mcp` or configured as an MCP server). It provides hierarchical tasks, scratch notes, and project-based organization. Otherwise, use `.scratch/todo.md` for progress tracking.
 
 ### Progress Tracking
 
@@ -101,9 +137,17 @@ Create or replace `.scratch/todo.md` to track your progress:
    - Testing approaches and coverage expectations
    - Documentation styles and conventions
 
-3. **Use MCP servers for external documentation**:
-   - **versionator**: Always check latest package versions before adding dependencies
-   - **context7**: Get current documentation for external libraries and frameworks
+3. **Use MCP servers for external documentation and tools**:
+   - **versionator**: Always check latest package versions before adding/updating dependencies
+   - **context7**: Get current documentation for external libraries and frameworks (requires API key)
+   - **Supabase**: When working with Supabase databases, authentication, or APIs
+   - **GitHub**: When working with GitHub repositories, issues, pull requests, or GitHub API
+   - **mcp-server-time**: When working with time/date operations, scheduling, or time-based logic
+   - **promptonomicon**: Use the to-do manager MCP server for tracking tasks and scratch notes (selected by default)
+     - **When user asks for status/progress**: Use `todo_summary` tool to generate formatted markdown summary
+     - **When transitioning between phases**: Use `todo_summary` to report current state to the user
+     - **For programmatic access**: Use `todo_query_tasks` and `todo_query_notes` for internal logic
+     - **For user communication**: Use `todo_summary` for formatted, readable status reports
    - Reference official docs for frameworks, libraries, and tools in use
 
 4. **Leverage semantic search tools**:

@@ -25,8 +25,45 @@ For ALL new features, bug fixes, or significant changes, you MUST follow the Pro
 ## Available MCP Servers
 
 When configured, use these MCP servers:
-- **versionator**: Check latest package versions with `get_package_version("ecosystem", "package")`
-- **context7**: Fetch current library documentation (requires CONTEXT7_API_KEY)
+
+### versionator (ALWAYS use for dependencies)
+- **When to use**: Before adding or updating ANY dependency
+- **How to use**: `get_package_version("ecosystem", "package-name")`
+- **Examples**: 
+  - `get_package_version("npm", "react")` → Latest React version
+  - `get_package_version("pypi", "django")` → Latest Django version
+  - `get_package_version("rubygems", "rails")` → Latest Rails version
+- **Critical**: Never guess package versions. Always use versionator when available.
+
+### context7 (For library documentation)
+- **When to use**: When you need current documentation for external libraries/frameworks
+- **How to use**: `get-library-docs("/library/path")`
+- **Requires**: CONTEXT7_API_KEY environment variable
+- **Example**: `get-library-docs("/expressjs/express")` → Express.js docs
+
+### Supabase (For database/backend work)
+- **When to use**: Working with Supabase databases, authentication, storage, or real-time features
+- **Requires**: SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN environment variables
+- **Why**: Direct integration with Supabase services for database queries, auth operations
+
+### GitHub (For repository operations)
+- **When to use**: Working with GitHub repositories, issues, pull requests, or GitHub API operations
+- **Requires**: GITHUB_PAT environment variable
+- **Why**: Direct access to GitHub API for repository management, issue tracking, PR creation/review
+
+### mcp-server-time (For time operations)
+- **When to use**: Working with dates, times, timezones, scheduling, or time-based logic
+- **Why**: Provides accurate time operations and timezone handling
+
+### promptonomicon (For to-do management)
+- **When to use**: Managing tasks, tracking progress, or storing scratch notes during development
+- **Tools available**:
+  - `todo_summary`: Generate formatted markdown summary (use when user asks "what's the status?", "show me progress", or when transitioning between phases)
+  - `todo_query_tasks`, `todo_query_notes`: Query tasks/notes programmatically (use for internal logic)
+  - `todo_create_task`, `todo_get_task`, `todo_update_task`, `todo_delete_task`: Task management
+  - `todo_create_note`, `todo_get_note`, `todo_update_note`, `todo_delete_note`: Note management
+- **Why**: Structured task management integrated with Promptonomicon workflow
+- **Status Reporting**: When user asks for status or progress, use `todo_summary` tool to generate a formatted markdown summary. Use `todo_query_*` tools for programmatic access in code logic.
 
 ## File Naming Convention
 
@@ -43,7 +80,7 @@ date +%Y%m%d
 ## Working Directory
 
 - Use `.scratch/` for temporary work and experiments
-- Track progress in `.scratch/todo.md` using the six-phase checklist
+- For task management: Use the Promptonomicon to-do MCP server if available (via `promptonomicon mcp` or configured as an MCP server). Otherwise, track progress in `.scratch/todo.md` using the six-phase checklist
 - All scratch work is gitignored
 
 ## Important Notes

@@ -11,6 +11,16 @@ Each template contains `<!-- CUSTOMIZE -->` comments showing where to add your p
 - **4_DEVELOPMENT_PROCESS.md** - Your coding standards and workflow
 - **5_BUILD_IMPLEMENTATION.md** - Your documentation style
 - **6_DOCUMENTATION_UPDATE.md** - Your update procedures
+- **DOCUMENTATION_INDEX.md** - Maps all documentation locations, when to reference them, and when to update them
+
+## Customization
+
+To customize these templates for your repository, tell your AI assistant:
+```
+"Follow the process in INTEGRATION.md to customize PROMPTONOMICON for this project"
+```
+
+This will automatically customize all templates based on your repository structure, patterns, and best practices.
 
 ## Usage
 

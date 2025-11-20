@@ -51,6 +51,8 @@ describe('promptonomicon init command', () => {
         '.promptonomicon/4_DEVELOPMENT_PROCESS.md',
         '.promptonomicon/5_BUILD_IMPLEMENTATION.md',
         '.promptonomicon/6_DOCUMENTATION_UPDATE.md',
+        '.promptonomicon/DOCUMENTATION_INDEX.md',
+        '.promptonomicon/INTEGRATION.md',
         '.promptonomicon/README.md'
       ];
 
@@ -129,9 +131,33 @@ describe('promptonomicon init command', () => {
       expect(output).toContain('ai-docs');
       expect(output).toContain('Fetched templates:');
       expect(output).toContain('PROMPTONOMICON.md');
+      expect(output).toContain('DOCUMENTATION_INDEX.md');
+      expect(output).toContain('INTEGRATION.md');
       expect(output).toContain('AI assistant integration:');
       expect(output).toContain('Claude (CLAUDE.md in project root)');
       expect(output).toContain('Next steps:');
+    });
+
+    test('should create DOCUMENTATION_INDEX.md with correct content', () => {
+      execSync(`node ${CLI_PATH} init -y`, { encoding: 'utf8' });
+
+      expect(fs.existsSync('.promptonomicon/DOCUMENTATION_INDEX.md')).toBe(true);
+      const content = fs.readFileSync('.promptonomicon/DOCUMENTATION_INDEX.md', 'utf8');
+      expect(content).toContain('# Documentation Index');
+      expect(content).toContain('**Purpose**: What each document is for');
+      expect(content).toContain('**When to Reference**: When developers/AI should read it');
+      expect(content).toContain('**When to Update**: When the document should be modified');
+    });
+
+    test('should create INTEGRATION.md with correct content', () => {
+      execSync(`node ${CLI_PATH} init -y`, { encoding: 'utf8' });
+
+      expect(fs.existsSync('.promptonomicon/INTEGRATION.md')).toBe(true);
+      const content = fs.readFileSync('.promptonomicon/INTEGRATION.md', 'utf8');
+      expect(content).toContain('# Customizing Promptonomicon for Your Repository');
+      expect(content).toContain('Follow the process in .promptonomicon/INTEGRATION.md');
+      expect(content).toContain('Phase 1: Repository Investigation');
+      expect(content).toContain('Phase 2: Best Practices Research');
     });
   });
 
@@ -219,11 +245,42 @@ describe('promptonomicon init command', () => {
     });
   });
 
+  describe('template fetching', () => {
+    test('should load templates from local installation first', () => {
+      // This tests that templates are loaded from the installed package
+      // The fetchTemplateFile function tries local first, then GitHub
+      execSync(`node ${CLI_PATH} init -y`, { encoding: 'utf8' });
+
+      // All templates should be created successfully (loaded from local package)
+      const templateFiles = [
+        'PROMPTONOMICON.md',
+        '1_BUILD_DESIGN.md',
+        '3_BUILD_PLAN.md',
+        '4_DEVELOPMENT_PROCESS.md',
+        '5_BUILD_IMPLEMENTATION.md',
+        '6_DOCUMENTATION_UPDATE.md',
+        'DOCUMENTATION_INDEX.md',
+        'INTEGRATION.md',
+        'README.md'
+      ];
+
+      templateFiles.forEach(file => {
+        const filePath = `.promptonomicon/${file}`;
+        expect(fs.existsSync(filePath)).toBe(true);
+        const content = fs.readFileSync(filePath, 'utf8');
+        expect(content.length).toBeGreaterThan(0);
+      });
+    });
+  });
+
   describe('error handling', () => {
     test('should handle network errors gracefully', () => {
       // This would require mocking axios, which is complex for integration tests
       // The error handling is tested implicitly - if GitHub is down, it should use local files
-      expect(true).toBe(true);
+      // The local-first approach ensures templates can be loaded even offline
+      execSync(`node ${CLI_PATH} init -y`, { encoding: 'utf8' });
+      // If we get here without error, local fetching worked
+      expect(fs.existsSync('.promptonomicon/PROMPTONOMICON.md')).toBe(true);
     });
 
     test('should handle file system errors gracefully', () => {

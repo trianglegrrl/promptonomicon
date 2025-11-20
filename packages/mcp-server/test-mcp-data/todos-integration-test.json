@@ -1,0 +1,55 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "content": null,
+      "description": null,
+      "status": "completed",
+      "order": null,
+      "projectName": "integration-test",
+      "parentId": null,
+      "subTasks": [
+        "1.1"
+      ]
+    },
+    {
+      "id": "2",
+      "content": null,
+      "description": null,
+      "status": "completed",
+      "order": null,
+      "projectName": "integration-test",
+      "parentId": null,
+      "subTasks": []
+    },
+    {
+      "id": "3",
+      "content": null,
+      "description": null,
+      "status": "completed",
+      "order": null,
+      "projectName": "integration-test",
+      "parentId": null,
+      "subTasks": []
+    },
+    {
+      "id": "1.1",
+      "content": "Create schema",
+      "description": null,
+      "status": "pending",
+      "order": 1,
+      "projectName": "integration-test",
+      "parentId": "1",
+      "subTasks": []
+    }
+  ],
+  "scratchNotes": [
+    {
+      "id": "note-1",
+      "content": null,
+      "projectName": "integration-test",
+      "completed": true,
+      "createdAt": "2025-11-20T16:49:57.254Z"
+    }
+  ]
+}

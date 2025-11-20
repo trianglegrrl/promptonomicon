@@ -7,13 +7,18 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import os from 'os';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import inquirer from 'inquirer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Read version from package.json
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+const VERSION = packageJson.version;
 
 const program = new Command();
 
@@ -29,6 +34,8 @@ const TEMPLATE_FILES = [
   '4_DEVELOPMENT_PROCESS.md',
   '5_BUILD_IMPLEMENTATION.md',
   '6_DOCUMENTATION_UPDATE.md',
+  'DOCUMENTATION_INDEX.md',
+  'INTEGRATION.md',
   'PROMPTONOMICON.md',
   'README.md'
 ];
@@ -53,12 +60,30 @@ const AI_ASSISTANT_FILES = [
   'ai-assistants/claude-reference.md'
 ];
 
-// MCP server configurations
-const MCP_SERVERS = {
-  versionator: {
-    command: 'npx',
-    args: ['-y', '@versionator/mcp-server'],
-    description: 'Check latest versions of packages across all ecosystems'
+// MCP server configurations template
+const MCP_SERVER_TEMPLATES = {
+  supabase: {
+    type: 'http',
+    url: 'https://mcp.supabase.com/mcp?project_ref=${SUPABASE_PROJECT_REF}',
+    headers: {
+      Authorization: 'Bearer ${SUPABASE_ACCESS_TOKEN}'
+    },
+    description: 'Supabase MCP server for database and API integration',
+    requiresVars: ['SUPABASE_PROJECT_REF', 'SUPABASE_ACCESS_TOKEN']
+  },
+  time: {
+    command: 'uvx',
+    args: ['mcp-server-time'],
+    description: 'mcp-server-time for time-related operations (no configuration needed)',
+    requiresVars: []
+  },
+  github: {
+    url: 'https://api.githubcopilot.com/mcp/',
+    headers: {
+      Authorization: 'Bearer ${GITHUB_PAT}'
+    },
+    description: 'GitHub MCP server for repository and GitHub API integration',
+    requiresVars: ['GITHUB_PAT']
   },
   context7: {
     command: 'npx',
@@ -66,18 +91,44 @@ const MCP_SERVERS = {
     env: {
       CONTEXT7_API_KEY: '${CONTEXT7_API_KEY}'
     },
-    description: 'Fetch up-to-date documentation for libraries (requires API key)'
+    description: 'Fetch up-to-date documentation for libraries (requires API key)',
+    requiresVars: ['CONTEXT7_API_KEY']
+  },
+  versionator: {
+    command: 'npx',
+    args: ['-y', '@versionator/mcp-server'],
+    description: 'Check latest versions of packages across all ecosystems',
+    requiresVars: []
+  },
+  promptonomicon: {
+    command: 'npx',
+    args: ['-y', 'promptonomicon-mcp', '--data-dir', '.promptonomicon'],
+    description: 'Promptonomicon to-do manager MCP server (selected by default)',
+    requiresVars: []
   }
 };
 
 async function fetchTemplateFile(filename) {
+  // Try local file first (from installed package)
+  const localPath = path.join(__dirname, '..', '.promptonomicon', filename);
+  
+  if (existsSync(localPath)) {
+    try {
+      return await fs.readFile(localPath, 'utf-8');
+    } catch (localError) {
+      // If local read fails, continue to try GitHub
+    }
+  }
+
+  // Fallback to GitHub if local doesn't exist or fails
   const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/.promptonomicon/${filename}`;
 
   try {
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    throw new Error(`Failed to fetch ${filename}: ${error.message}`);
+    // If both local and GitHub fail, throw error with helpful message
+    throw new Error(`Failed to fetch ${filename}: Local file not found and GitHub fetch failed (${error.message}). Make sure promptonomicon is properly installed.`);
   }
 }
 
@@ -95,8 +146,8 @@ async function fetchMCPConfig() {
     if (existsSync(localPath)) {
       return await fs.readFile(localPath, 'utf-8');
     }
-    // Return default config if fetch fails
-    return JSON.stringify({ mcpServers: MCP_SERVERS }, null, 2);
+    // Return default empty config if fetch fails
+    return JSON.stringify({ mcpServers: {} }, null, 2);
   }
 }
 
@@ -125,13 +176,12 @@ async function setupAIAssistantIntegration() {
     }
   }
 
-  // Cursor integration
-  if (existsSync('.cursor') || process.env.CURSOR_EDITOR) {
-    await fs.mkdir('.cursor/rules', { recursive: true });
-    const content = await getAIAssistantContent('cursor-rules.mdc');
-    await fs.writeFile('.cursor/rules/promptonomicon.mdc', content);
-    integrations.push('Cursor (.cursor/rules/promptonomicon.mdc)');
-  }
+  // Cursor integration - always create .cursor/rules (directory will be created by setupMCPServers if needed)
+  // Always create for compatibility with all environments
+  await fs.mkdir('.cursor/rules', { recursive: true });
+  const content = await getAIAssistantContent('cursor-rules.mdc');
+  await fs.writeFile('.cursor/rules/promptonomicon.mdc', content);
+  integrations.push('Cursor (.cursor/rules/promptonomicon.mdc)');
 
   // VS Code integration
   if (existsSync('.vscode')) {
@@ -163,89 +213,162 @@ async function setupAIAssistantIntegration() {
   return integrations;
 }
 
+// Prompt for MCP server selection and configuration
+async function promptForMCPServers(skipPrompts = false, filterServers = null) {
+  const serverConfigs = {};
+  const infoMessages = [];
+
+  if (skipPrompts) {
+    // With -y flag, don't configure any MCP servers by default
+    return { serverConfigs, infoMessages };
+  }
+
+  // Build choices for checkbox - filter if specific servers requested
+  const serverChoices = [];
+  for (const [serverName, serverInfo] of Object.entries(MCP_SERVER_TEMPLATES)) {
+    if (!filterServers || filterServers.includes(serverName)) {
+      // promptonomicon is checked by default
+      const isDefault = serverName === 'promptonomicon';
+      serverChoices.push({
+        name: `${serverName} - ${serverInfo.description}`,
+        value: serverName,
+        checked: isDefault || (!filterServers || filterServers.includes(serverName)) // promptonomicon checked by default
+      });
+    }
+  }
+
+  const answers = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'selectedServers',
+      message: filterServers 
+        ? `Configure these MCP servers (${filterServers.join(', ')})?`
+        : 'Which MCP servers would you like to configure?',
+      choices: serverChoices
+    }
+  ]);
+
+  // Configure each selected server
+  for (const serverName of answers.selectedServers) {
+    const serverInfo = MCP_SERVER_TEMPLATES[serverName];
+    
+    // Create config from template
+    let serverConfig = { ...serverInfo };
+    
+    // Prompt for required environment variables
+    // We keep placeholders in config (like ${VAR_NAME}), but validate the user knows what to set
+    for (const varName of serverInfo.requiresVars || []) {
+      const envValue = process.env[varName];
+      if (envValue) {
+        // Environment variable already set
+        console.log(chalk.green(`  ✓ Found ${varName} in environment`));
+      } else {
+        // Prompt user to confirm they understand what this variable should be
+        const answer = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'value',
+            message: `Enter ${varName} (this value will be used to validate, but config will use \${${varName}} placeholder):`,
+            validate: (input) => {
+              if (!input.trim()) {
+                return `${varName} is required for ${serverName}. Set it as an environment variable before using this MCP server.`;
+              }
+              return true;
+            }
+          }
+        ]);
+        
+        if (answer.value.trim()) {
+          // Validate the user provided something
+          console.log(chalk.yellow(`  ⚠ Note: Set ${varName} as an environment variable. The config uses \${${varName}} placeholder.`));
+        }
+      }
+    }
+    
+    // Keep placeholders in config - MCP clients will resolve ${VAR_NAME} from environment
+    // We don't store actual values for security reasons
+
+    // Remove description and requiresVars from final config (they're metadata only)
+    delete serverConfig.description;
+    delete serverConfig.requiresVars;
+
+    serverConfigs[serverName] = serverConfig;
+  }
+
+  return { serverConfigs, infoMessages };
+}
+
 // Setup MCP servers
-async function setupMCPServers(servers) {
+async function setupMCPServers(serverConfigs) {
   const configurations = [];
 
-  // Get base MCP config
-  const mcpConfigStr = await fetchMCPConfig();
-  const mcpConfig = JSON.parse(mcpConfigStr);
+  // serverConfigs is an object mapping server names to their configured configs
+  // Use all provided server configs
+  const filteredServers = { ...serverConfigs };
 
-  // Filter to requested servers
-  const filteredServers = {};
-  for (const server of servers) {
-    if (mcpConfig.mcpServers[server]) {
-      filteredServers[server] = mcpConfig.mcpServers[server];
-    }
+  // Cursor MCP configuration - always create .cursor directory if needed
+  await fs.mkdir('.cursor', { recursive: true });
+  const cursorMcpPath = '.cursor/mcp.json';
+
+  let existingConfig = {};
+  if (existsSync(cursorMcpPath)) {
+    const content = await fs.readFile(cursorMcpPath, 'utf-8');
+    existingConfig = JSON.parse(content);
   }
 
-  // Cursor MCP configuration
-  if (existsSync('.cursor')) {
-    await fs.mkdir('.cursor', { recursive: true });
-    const cursorMcpPath = '.cursor/mcp.json';
-
-    let existingConfig = {};
-    if (existsSync(cursorMcpPath)) {
-      const content = await fs.readFile(cursorMcpPath, 'utf-8');
-      existingConfig = JSON.parse(content);
+  // Merge configurations
+  const mergedConfig = {
+    ...existingConfig,
+    mcpServers: {
+      ...(existingConfig.mcpServers || {}),
+      ...filteredServers
     }
+  };
 
-    // Merge configurations
-    const mergedConfig = {
-      ...existingConfig,
-      mcpServers: {
-        ...(existingConfig.mcpServers || {}),
-        ...filteredServers
-      }
-    };
+  await fs.writeFile(cursorMcpPath, JSON.stringify(mergedConfig, null, 2));
+  configurations.push(`Cursor (.cursor/mcp.json)`);
 
-    await fs.writeFile(cursorMcpPath, JSON.stringify(mergedConfig, null, 2));
-    configurations.push(`Cursor (.cursor/mcp.json)`);
+  // VS Code MCP configuration - always create .vscode directory if needed
+  await fs.mkdir('.vscode', { recursive: true });
+  const vscodeMcpPath = '.vscode/mcp.json';
+  let existingVscodeConfig = {};
+  if (existsSync(vscodeMcpPath)) {
+    const content = await fs.readFile(vscodeMcpPath, 'utf-8');
+    existingVscodeConfig = JSON.parse(content);
   }
 
-  // VS Code MCP configuration (if directory exists)
-  if (existsSync('.vscode')) {
-    const vscodeMcpPath = '.vscode/mcp.json';
-    let existingVscodeConfig = {};
-    if (existsSync(vscodeMcpPath)) {
-      const content = await fs.readFile(vscodeMcpPath, 'utf-8');
-      existingVscodeConfig = JSON.parse(content);
+  // Merge configurations
+  const mergedVscodeConfig = {
+    ...existingVscodeConfig,
+    mcpServers: {
+      ...(existingVscodeConfig.mcpServers || {}),
+      ...filteredServers
     }
+  };
 
-    // Merge configurations
-    const mergedVscodeConfig = {
-      ...existingVscodeConfig,
-      mcpServers: {
-        ...(existingVscodeConfig.mcpServers || {}),
-        ...filteredServers
-      }
-    };
+  await fs.writeFile(vscodeMcpPath, JSON.stringify(mergedVscodeConfig, null, 2));
+  configurations.push('VS Code (.vscode/mcp.json)');
 
-    await fs.writeFile(vscodeMcpPath, JSON.stringify(mergedVscodeConfig, null, 2));
-    configurations.push('VS Code (.vscode/mcp.json)');
+  // Windsurf MCP configuration - always create .windsurf directory if needed
+  await fs.mkdir('.windsurf', { recursive: true });
+  const windsurfMcpPath = '.windsurf/mcp.json';
+  let existingWindsurfConfig = {};
+  if (existsSync(windsurfMcpPath)) {
+    const content = await fs.readFile(windsurfMcpPath, 'utf-8');
+    existingWindsurfConfig = JSON.parse(content);
   }
 
-  // Windsurf MCP configuration (if directory exists)
-  if (existsSync('.windsurf')) {
-    const windsurfMcpPath = '.windsurf/mcp.json';
-    let existingWindsurfConfig = {};
-    if (existsSync(windsurfMcpPath)) {
-      const content = await fs.readFile(windsurfMcpPath, 'utf-8');
-      existingWindsurfConfig = JSON.parse(content);
+  // Merge configurations
+  const mergedWindsurfConfig = {
+    ...existingWindsurfConfig,
+    mcpServers: {
+      ...(existingWindsurfConfig.mcpServers || {}),
+      ...filteredServers
     }
+  };
 
-    // Merge configurations
-    const mergedWindsurfConfig = {
-      ...existingWindsurfConfig,
-      mcpServers: {
-        ...(existingWindsurfConfig.mcpServers || {}),
-        ...filteredServers
-      }
-    };
-
-    await fs.writeFile(windsurfMcpPath, JSON.stringify(mergedWindsurfConfig, null, 2));
-    configurations.push('Windsurf (.windsurf/mcp.json)');
-  }
+  await fs.writeFile(windsurfMcpPath, JSON.stringify(mergedWindsurfConfig, null, 2));
+  configurations.push('Windsurf (.windsurf/mcp.json)');
 
   // Claude Desktop configuration (informational only - always show since it requires manual setup)
   configurations.push(`Claude Desktop (see .promptonomicon/ai-assistants/claude-reference.md for manual setup)`);
@@ -369,6 +492,52 @@ async function createGitignoreEntry() {
   }
 }
 
+// MCP command
+program
+  .command('mcp')
+  .description('Run the Promptonomicon to-do manager MCP server')
+  .option('-p, --project-name <name>', 'Project name (overrides auto-detection)')
+  .option('--http', 'Start HTTP server instead of stdio')
+  .option('--port <port>', 'HTTP server port (default: 3000)', '3000')
+  .option('--data-dir <dir>', 'Data directory (default: .promptonomicon)', '.promptonomicon')
+  .action((options) => {
+    // Spawn the MCP server process
+    const args = [];
+    
+    if (options.projectName) {
+      args.push('--project-name', options.projectName);
+    }
+    if (options.http) {
+      args.push('--http');
+      if (options.port) {
+        args.push('--port', options.port);
+      }
+    }
+    if (options.dataDir) {
+      args.push('--data-dir', options.dataDir);
+    }
+    
+    const child = spawn('npx', ['-y', 'promptonomicon-mcp', ...args], {
+      stdio: 'inherit',
+      shell: true
+    });
+    
+    child.on('error', (error) => {
+      console.error(`Failed to start MCP server: ${error.message}`);
+      process.exit(1);
+    });
+    
+    process.on('SIGINT', () => {
+      child.kill('SIGINT');
+      process.exit(0);
+    });
+    
+    process.on('SIGTERM', () => {
+      child.kill('SIGTERM');
+      process.exit(0);
+    });
+  });
+
 // Init command
 program
   .command('init')
@@ -409,57 +578,61 @@ program
       const aiIntegrations = await setupAIAssistantIntegration();
 
       // Handle MCP servers
+      // Always prompt unless -y flag is set OR --with-mcp-servers with specific servers is provided
       let mcpConfigurations = [];
-      if (options.withMcpServers !== undefined) {
-        spinner.stop();
-
-        let serversToInstall = [];
-
-        if (options.withMcpServers === true && !options.yes) {
-          // Interactive mode
-          const answers = await inquirer.prompt([
-            {
-              type: 'checkbox',
-              name: 'servers',
-              message: 'Which MCP servers would you like to configure?',
-              choices: [
-                {
-                  name: 'versionator - Check latest package versions',
-                  value: 'versionator',
-                  checked: true
-                },
-                {
-                  name: 'context7 - Fetch library documentation (requires API key)',
-                  value: 'context7',
-                  checked: false
-                }
-              ]
-            },
-            {
-              type: 'confirm',
-              name: 'confirmContext7',
-              message: 'context7 requires a CONTEXT7_API_KEY environment variable. Do you have one?',
-              when: (answers) => answers.servers.includes('context7'),
-              default: false
-            }
-          ]);
-
-          serversToInstall = answers.servers;
-          if (answers.confirmContext7 === false) {
-            serversToInstall = serversToInstall.filter(s => s !== 'context7');
-            console.log(chalk.yellow('\nSkipping context7 configuration. Get an API key at https://context7.com'));
+      let mcpInfoMessages = [];
+      
+      if (options.withMcpServers !== undefined || !options.yes) {
+        // If --with-mcp-servers is provided OR we're not in -y mode, handle MCP servers
+        if (!options.yes) {
+          // Interactive mode - prompt for MCP server configuration
+          spinner.stop();
+          
+          let serverConfigs = {};
+          if (typeof options.withMcpServers === 'string') {
+            // Specific servers provided as comma-separated list
+            const serverNames = options.withMcpServers.split(',').map(s => s.trim());
+            // Prompt for configuration values, filtered to requested servers
+            const result = await promptForMCPServers(false, serverNames);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          } else {
+            // Interactive mode - prompt for server selection and configuration
+            const result = await promptForMCPServers(false, null);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
           }
-        } else if (typeof options.withMcpServers === 'string') {
-          // Specific servers provided
-          serversToInstall = options.withMcpServers.split(',').map(s => s.trim());
-        } else if (options.yes) {
-          // Default to versionator only in -y mode
-          serversToInstall = ['versionator'];
-        }
-
-        if (serversToInstall.length > 0) {
-          spinner.start('Configuring MCP servers...');
-          mcpConfigurations = await setupMCPServers(serversToInstall);
+          
+          if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
+            spinner.start('Configuring MCP servers...');
+            mcpConfigurations = await setupMCPServers(serverConfigs);
+          }
+        } else if (options.withMcpServers !== undefined && typeof options.withMcpServers === 'string') {
+          // -y flag with specific servers - configure them (but skip prompts for env vars)
+          spinner.text = 'Configuring MCP servers...';
+          const serverNames = options.withMcpServers.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          
+          // Build configs from templates, but skip servers that require env vars we don't have
+          const serverConfigs = {};
+          for (const serverName of serverNames) {
+            const serverTemplate = MCP_SERVER_TEMPLATES[serverName];
+            if (serverTemplate) {
+              // For -y mode, only add servers that don't require env vars OR have them set
+              const requiresVars = serverTemplate.requiresVars || [];
+              const hasRequiredVars = requiresVars.length === 0 || requiresVars.every(varName => process.env[varName]);
+              if (hasRequiredVars) {
+                // Create config without prompts (use placeholders if needed)
+                const config = { ...serverTemplate };
+                delete config.description;
+                delete config.requiresVars;
+                delete config.infoOnly;
+                serverConfigs[serverName] = config;
+              }
+            }
+          }
+          
+          // Always call setupMCPServers to create/update .mcp.json (even if empty)
+          mcpConfigurations = await setupMCPServers(serverConfigs);
         }
       }
 
@@ -481,10 +654,18 @@ program
         console.log('\n' + chalk.green('✓') + ' MCP server configurations:');
         mcpConfigurations.forEach(config => console.log('  - ' + chalk.gray(config)));
       }
+      
+      if (mcpInfoMessages.length > 0) {
+        console.log('\n' + chalk.cyan('ℹ') + ' MCP server information:');
+        mcpInfoMessages.forEach(msg => console.log('  - ' + chalk.gray(msg)));
+      }
 
       console.log('\n' + chalk.cyan('Next steps:'));
-      console.log('  1. Customize the templates in .promptonomicon/ for your project');
-      console.log('  2. Tell your AI assistant: "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md"');
+      console.log('  1. Customize Promptonomicon for your project:');
+      console.log('     Tell your AI assistant: "Follow the process in .promptonomicon/INTEGRATION.md to customize PROMPTONOMICON for this project"');
+      console.log('     This will automatically investigate your repository, research best practices, and customize all templates');
+      console.log('  2. Build features using Promptonomicon:');
+      console.log('     Tell your AI assistant: "Follow the Promptonomicon process in .promptonomicon/PROMPTONOMICON.md to implement [feature]"');
       console.log('  3. Run "promptonomicon doctor" to check your setup');
 
     } catch (error) {
@@ -523,58 +704,61 @@ program
       spinner.text = 'Resetting AI assistant integration...';
       const aiIntegrations = await setupAIAssistantIntegration();
 
-      // Handle MCP servers if requested
+      // Handle MCP servers - same logic as init
       let mcpConfigurations = [];
-      if (options.withMcpServers !== undefined) {
-        spinner.stop();
-
-        let serversToInstall = [];
-
-        if (options.withMcpServers === true && !options.yes) {
-          // Interactive mode
-          const answers = await inquirer.prompt([
-            {
-              type: 'checkbox',
-              name: 'servers',
-              message: 'Which MCP servers would you like to configure?',
-              choices: [
-                {
-                  name: 'versionator - Check latest package versions',
-                  value: 'versionator',
-                  checked: true
-                },
-                {
-                  name: 'context7 - Fetch library documentation (requires API key)',
-                  value: 'context7',
-                  checked: false
-                }
-              ]
-            },
-            {
-              type: 'confirm',
-              name: 'confirmContext7',
-              message: 'context7 requires a CONTEXT7_API_KEY environment variable. Do you have one?',
-              when: (answers) => answers.servers.includes('context7'),
-              default: false
-            }
-          ]);
-
-          serversToInstall = answers.servers;
-          if (answers.confirmContext7 === false) {
-            serversToInstall = serversToInstall.filter(s => s !== 'context7');
-            console.log(chalk.yellow('\nSkipping context7 configuration. Get an API key at https://context7.com'));
+      let mcpInfoMessages = [];
+      
+      if (options.withMcpServers !== undefined || !options.yes) {
+        // If --with-mcp-servers is provided OR we're not in -y mode, handle MCP servers
+        if (!options.yes) {
+          // Interactive mode - prompt for MCP server configuration
+          spinner.stop();
+          
+          let serverConfigs = {};
+          if (typeof options.withMcpServers === 'string') {
+            // Specific servers provided as comma-separated list
+            const serverNames = options.withMcpServers.split(',').map(s => s.trim());
+            // Prompt for configuration values, filtered to requested servers
+            const result = await promptForMCPServers(false, serverNames);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
+          } else if (options.withMcpServers === true) {
+            // Interactive mode - prompt for server selection and configuration
+            const result = await promptForMCPServers(false, null);
+            serverConfigs = result.serverConfigs;
+            mcpInfoMessages = result.infoMessages;
           }
-        } else if (typeof options.withMcpServers === 'string') {
-          // Specific servers provided
-          serversToInstall = options.withMcpServers.split(',').map(s => s.trim());
-        } else if (options.yes) {
-          // Default to versionator only in -y mode
-          serversToInstall = ['versionator'];
-        }
-
-        if (serversToInstall.length > 0) {
-          spinner.start('Configuring MCP servers...');
-          mcpConfigurations = await setupMCPServers(serversToInstall);
+          
+          if (Object.keys(serverConfigs).length > 0 || mcpInfoMessages.length > 0) {
+            spinner.start('Configuring MCP servers...');
+            mcpConfigurations = await setupMCPServers(serverConfigs);
+          }
+        } else if (options.withMcpServers !== undefined && typeof options.withMcpServers === 'string') {
+          // -y flag with specific servers - configure them (but skip prompts for env vars)
+          spinner.text = 'Configuring MCP servers...';
+          const serverNames = options.withMcpServers.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          
+          // Build configs from templates, but skip servers that require env vars we don't have
+          const serverConfigs = {};
+          for (const serverName of serverNames) {
+            const serverTemplate = MCP_SERVER_TEMPLATES[serverName];
+            if (serverTemplate) {
+              // For -y mode, only add servers that don't require env vars OR have them set
+              const requiresVars = serverTemplate.requiresVars || [];
+              const hasRequiredVars = requiresVars.length === 0 || requiresVars.every(varName => process.env[varName]);
+              if (hasRequiredVars) {
+                // Create config without prompts (use placeholders if needed)
+                const config = { ...serverTemplate };
+                delete config.description;
+                delete config.requiresVars;
+                delete config.infoOnly;
+                serverConfigs[serverName] = config;
+              }
+            }
+          }
+          
+          // Always call setupMCPServers to create/update .mcp.json (even if empty)
+          mcpConfigurations = await setupMCPServers(serverConfigs);
         }
       }
 
@@ -591,6 +775,11 @@ program
       if (mcpConfigurations.length > 0) {
         console.log('\n' + chalk.green('✓') + ' MCP server configurations:');
         mcpConfigurations.forEach(config => console.log('  - ' + chalk.gray(config)));
+      }
+      
+      if (mcpInfoMessages.length > 0) {
+        console.log('\n' + chalk.cyan('ℹ') + ' MCP server information:');
+        mcpInfoMessages.forEach(msg => console.log('  - ' + chalk.gray(msg)));
       }
 
     } catch (error) {
@@ -772,7 +961,15 @@ program
 // Main program setup
 program
   .name('promptonomicon')
-  .version('1.3.1')
-  .description('Transform how you build software with AI through structured, documentation-driven development');
+  .version(VERSION, '-v, --version', 'display version number')
+  .description('Transform how you build software with AI through structured, documentation-driven development')
+  .addHelpText('before', `Promptonomicon ${VERSION}\n`);
+
+// Handle -V as an alias for --version (check before parsing)
+if (process.argv.includes('-V')) {
+  const versionIndex = process.argv.indexOf('-V');
+  // Replace -V with --version
+  process.argv[versionIndex] = '--version';
+}
 
 program.parse();

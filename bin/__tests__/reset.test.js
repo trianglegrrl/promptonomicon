@@ -55,9 +55,9 @@ describe('promptonomicon reset command', () => {
       // Delete AI files
       fs.rmSync('CLAUDE.md');
 
-      // Create AI directories
-      fs.mkdirSync('.cursor');
-      fs.mkdirSync('.vscode');
+      // Create AI directories (use recursive to avoid EEXIST)
+      if (!fs.existsSync('.cursor')) fs.mkdirSync('.cursor', { recursive: true });
+      if (!fs.existsSync('.vscode')) fs.mkdirSync('.vscode', { recursive: true });
 
       const output = execSync(`node ${CLI_PATH} reset --yes`, { encoding: 'utf8' });
 
@@ -145,9 +145,9 @@ describe('promptonomicon reset command', () => {
     });
 
     test('should handle tool-specific MCP configurations', () => {
-      // Create tool directories
-      fs.mkdirSync('.cursor');
-      fs.mkdirSync('.vscode');
+      // Create tool directories (use recursive to avoid EEXIST)
+      if (!fs.existsSync('.cursor')) fs.mkdirSync('.cursor', { recursive: true });
+      if (!fs.existsSync('.vscode')) fs.mkdirSync('.vscode', { recursive: true });
 
       // Create existing Cursor MCP config
       const cursorConfig = {
@@ -210,6 +210,7 @@ describe('promptonomicon reset command', () => {
     test('should list all reset files', () => {
       const output = execSync(`node ${CLI_PATH} reset --yes`, { encoding: 'utf8' });
 
+      // Verify all template files are reset, including new 2.0 files
       const expectedFiles = [
         'PROMPTONOMICON.md',
         '1_BUILD_DESIGN.md',
@@ -217,6 +218,8 @@ describe('promptonomicon reset command', () => {
         '4_DEVELOPMENT_PROCESS.md',
         '5_BUILD_IMPLEMENTATION.md',
         '6_DOCUMENTATION_UPDATE.md',
+        'DOCUMENTATION_INDEX.md',
+        'INTEGRATION.md',
         'README.md'
       ];
 

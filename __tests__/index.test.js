@@ -2,7 +2,7 @@ import { VERSION, info, templateFiles, directories } from '../index.js';
 
 describe('Promptonomicon Main Module', () => {
   test('should export VERSION', () => {
-    expect(VERSION).toBe('1.3.1');
+    expect(VERSION).toBe('2.2.0');
     expect(typeof VERSION).toBe('string');
     expect(VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });

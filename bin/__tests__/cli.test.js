@@ -31,6 +31,7 @@ describe('promptonomicon CLI', () => {
     test('should display help with --help flag', () => {
       const output = execSync(`node ${CLI_PATH} --help`, { encoding: 'utf8' });
 
+      expect(output).toContain(`Promptonomicon ${packageJson.version}`);
       expect(output).toContain('Usage: promptonomicon');
       expect(output).toContain('Transform how you build software with AI');
       expect(output).toContain('Commands:');
@@ -38,7 +39,7 @@ describe('promptonomicon CLI', () => {
       expect(output).toContain('doctor');
       expect(output).toContain('reset');
       expect(output).toContain('Options:');
-      expect(output).toContain('-V, --version');
+      expect(output).toContain('-v, --version');
       expect(output).toContain('-h, --help');
     });
 

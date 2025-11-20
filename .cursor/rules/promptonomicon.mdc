@@ -1,0 +1,71 @@
+---
+alwaysApply: true
+---
+
+# Promptonomicon Framework
+
+This project uses the Promptonomicon framework for structured, documentation-driven development.
+
+## Primary Rule
+
+**For ALL new features, bug fixes, or significant changes:**
+Follow the Promptonomicon process defined in `.promptonomicon/PROMPTONOMICON.md`
+
+## Process Overview
+
+1. **Understand** - Investigate requirements thoroughly
+2. **Design** - Create design documentation in `ai-docs/ai-design/`
+3. **Plan** - Build implementation plan in `ai-docs/ai-plans/`
+4. **Develop** - Execute with test-driven development
+5. **Document** - Capture reality in `ai-docs/ai-implementation/`
+6. **Update** - Synchronize all documentation
+
+## Key Principles
+
+- Documentation-driven development
+- Fail-hard policy (no silent failures)
+- Test coverage requirements at each step
+- Clean code practices (SOLID, DRY, KISS)
+
+## MCP Servers Available
+
+When configured, use these MCP servers:
+
+### versionator (ALWAYS use for dependencies)
+- **When to use**: Before adding or updating ANY dependency
+- **How to use**: `get_package_version("ecosystem", "package-name")`
+- **Examples**: 
+  - `get_package_version("npm", "react")`
+  - `get_package_version("pypi", "django")`
+- **Why**: Ensures you're using current, supported versions (versionator-first principle)
+
+### context7 (For library documentation)
+- **When to use**: When you need current documentation for external libraries/frameworks
+- **How to use**: `get-library-docs("/library/path")`
+- **Requires**: CONTEXT7_API_KEY environment variable
+- **Why**: Gets up-to-date documentation directly from source
+
+### Supabase (For database/backend work)
+- **When to use**: Working with Supabase databases, authentication, storage, or real-time features
+- **Requires**: SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN environment variables
+- **Why**: Direct integration with Supabase services
+
+### GitHub (For repository operations)
+- **When to use**: Working with GitHub repositories, issues, pull requests, or GitHub API
+- **Requires**: GITHUB_PAT environment variable
+- **Why**: Direct access to GitHub API for repository management
+
+### mcp-server-time (For time operations)
+- **When to use**: Working with dates, times, timezones, scheduling, or time-based calculations
+- **Why**: Provides accurate time operations and timezone handling
+
+## File Naming
+
+Use datestamps: `date +%Y%m%d`
+- Design: `ai-docs/ai-design/YYYYMMDD_design_feature_name.md`
+- Plan: `ai-docs/ai-plans/YYYYMMDD_plan_feature_name.md`
+- Implementation: `ai-docs/ai-implementation/YYYYMMDD_implementation_feature_name.md`
+
+## Scratch Directory
+
+Use `.scratch/` for temporary work and track progress in `.scratch/todo.md`

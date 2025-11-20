@@ -1,6 +1,9 @@
 # Scratch directory for temporary work
 .scratch/
 
+# Promptonomicon to-do data files
+.promptonomicon/todos-*.json
+
 # IDE and editor files
 .vscode/
 .idea/
