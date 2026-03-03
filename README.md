@@ -5,13 +5,14 @@
     <img alt="Promptonomicon Logo" src="promptonomicon-logo-lightbg.png" width="600">
   </picture>
 </p>
+
 # Note!
 
 Since creating promptonomicon, many things have changed in the AI coding world. One of them was the introduction of a standard format for skills.
 
-If you've been using promptonomicon, I suggest switching from promptonomicon to [Superpowers](https://github.com/obra/superpowers/tree/main) by @obra. That's what I've done!
+If you've been using promptonomicon, I suggest switching from promptonomicon to [Superpowers](https://github.com/obra/superpowers/tree/main) by @obra](https://github.com/obra). That's what I've done!
 
-- @trianglegrrl
+- [@trianglegrrl](https://github.com/trianglegrrl)
 
 # Promptonomicon
 
