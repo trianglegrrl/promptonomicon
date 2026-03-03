@@ -10,7 +10,7 @@
 
 Since creating promptonomicon, many things have changed in the AI coding world. One of them was the introduction of a standard format for skills.
 
-If you've been using promptonomicon, I suggest switching from promptonomicon to [Superpowers](https://github.com/obra/superpowers/tree/main) by @obra](https://github.com/obra). It does all of the same things promptonomicon does, in the same way promptonomicon does, but it's a better developer experience. I've switched and so should you!
+If you've been using promptonomicon, I suggest switching from promptonomicon to [Superpowers](https://github.com/obra/superpowers/tree/main) by [@obra](https://github.com/obra). It does all of the same things promptonomicon does, in the same way promptonomicon does, but it's a better developer experience. I've switched and so should you!
 
 - [@trianglegrrl](https://github.com/trianglegrrl)
 
